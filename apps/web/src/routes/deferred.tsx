@@ -38,6 +38,7 @@ function Deferred() {
       </div>
       <Suspense fallback={<div>Loading person...</div>}>
         <Await
+          // biome-ignore lint/correctness/noChildrenProp: Tanstack convention
           children={(data) => (
             <div data-testid="deferred-person">
               {data.name} - {data.randomNumber}
@@ -48,13 +49,16 @@ function Deferred() {
       </Suspense>
       <Suspense fallback={<div>Loading stuff...</div>}>
         <Await
+          // biome-ignore lint/correctness/noChildrenProp: Tanstack convention
           children={(data) => <h3 data-testid="deferred-stuff">{data}</h3>}
           promise={deferredStuff}
         />
       </Suspense>
       <div>Count: {count}</div>
       <div>
-        <button onClick={() => setCount(count + 1)}>Increment</button>
+        <button onClick={() => setCount(count + 1)} type="button">
+          Increment
+        </button>
       </div>
     </div>
   );

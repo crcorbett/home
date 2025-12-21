@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/customScript.js")({
+export const Route = createFileRoute("/custom-script.js")({
   server: {
     handlers: {
       GET: () =>

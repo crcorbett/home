@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import { seo } from "@packages/core";
+import { seo } from "@packages/core/seo";
 import {
   createRootRoute,
   HeadContent,
@@ -9,8 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type * as React from "react";
-import { DefaultCatchBoundary } from "$/components/DefaultCatchBoundary";
-import { NotFound } from "$/components/NotFound";
+import { DefaultCatchBoundary } from "$/components/default-catch-boundary";
+import { NotFound } from "$/components/not-found";
 import appCss from "$/styles/app.css?url";
 
 export const Route = createRootRoute({
@@ -54,7 +54,7 @@ export const Route = createRootRoute({
     ],
     scripts: [
       {
-        src: "/customScript.js",
+        src: "/custom-script.js",
         type: "text/javascript",
       },
     ],
@@ -66,7 +66,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

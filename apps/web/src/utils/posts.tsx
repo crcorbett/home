@@ -37,5 +37,5 @@ export const fetchPosts = createServerFn().handler(async () => {
 
   const posts = await res.json();
 
-  return (posts as Array<PostType>).slice(0, 10);
+  return (posts as PostType[]).slice(0, 10);
 });

@@ -19,9 +19,9 @@ function PostsComponent() {
                 activeProps={{ className: "text-black font-bold" }}
                 className="block py-1 text-blue-800 hover:text-blue-600"
                 params={{
-                  postId: String(post.id),
+                  "post-id": String(post.id),
                 }}
-                to="/posts/$postId"
+                to="/posts/$post-id"
               >
                 <div>{post.title.substring(0, 20)}</div>
               </Link>

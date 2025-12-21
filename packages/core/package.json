@@ -3,14 +3,19 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
+    "./seo": {
       "import": {
-        "@packages/source": "./index.ts",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "@packages/source": "./seo.ts",
+        "types": "./dist/seo.d.ts",
+        "default": "./dist/seo.js"
+      }
+    },
+    "./user": {
+      "import": {
+        "@packages/source": "./user.ts",
+        "types": "./dist/user.d.ts",
+        "default": "./dist/user.js"
       }
     },
     "./package.json": "./package.json"

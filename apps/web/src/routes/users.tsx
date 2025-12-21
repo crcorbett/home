@@ -1,4 +1,4 @@
-import type { User } from "@packages/core";
+import type { User } from "@packages/core/user";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/users")({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/users")({
 
     const data = await res.json();
 
-    return data as Array<User>;
+    return data as User[];
   },
   component: UsersComponent,
 });
@@ -31,9 +31,9 @@ function UsersComponent() {
               activeProps={{ className: "text-black font-bold" }}
               className="block py-1 text-blue-800 hover:text-blue-600"
               params={{
-                userId: String(user.id),
+                "user-id": String(user.id),
               }}
-              to="/users/$userId"
+              to="/users/$user-id"
             >
               <div>{user.name}</div>
             </Link>

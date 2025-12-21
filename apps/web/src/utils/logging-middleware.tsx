@@ -1,7 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start";
 
 const preLogMiddleware = createMiddleware({ type: "function" })
-  .client(async (ctx) => {
+  .client((ctx) => {
     const clientTime = new Date();
 
     return ctx.next({
@@ -13,7 +13,7 @@ const preLogMiddleware = createMiddleware({ type: "function" })
       },
     });
   })
-  .server(async (ctx) => {
+  .server((ctx) => {
     const serverTime = new Date();
 
     return ctx.next({

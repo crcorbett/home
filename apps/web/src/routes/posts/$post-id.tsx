@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { NotFound } from "$/components/NotFound";
-import { PostErrorComponent } from "$/components/PostError";
-import { fetchPost } from "../utils/posts";
+import { NotFound } from "$/components/not-found";
+import { PostErrorComponent } from "$/components/post-error";
+import { fetchPost } from "$/utils/posts";
 
-export const Route = createFileRoute("/posts/$postId")({
-  loader: ({ params: { postId } }) => fetchPost({ data: postId }),
+export const Route = createFileRoute("/posts/$post-id")({
+  loader: ({ params }) => fetchPost({ data: params["post-id"] }),
   errorComponent: PostErrorComponent,
   component: PostComponent,
   notFoundComponent: () => <NotFound>Post not found</NotFound>,
@@ -21,9 +21,9 @@ function PostComponent() {
         activeProps={{ className: "text-black font-bold" }}
         className="inline-block py-1 text-blue-800 hover:text-blue-600"
         params={{
-          postId: String(post.id),
+          "post-id": String(post.id),
         }}
-        to="/posts/$postId/deep"
+        to="/posts/$post-id/deep"
       >
         Deep View
       </Link>
