@@ -8,6 +8,9 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  resolve: {
+    conditions: ['@packages/source'],
+  },
   plugins: [
     tailwindcss(),
     tsConfigPaths({

@@ -1,14 +1,14 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true
-  }
+    "noEmit": true,
+    "composite": false
+  },
+  "include": [],
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./packages/core" },
+    { "path": "./packages/api" },
+    { "path": "./packages/ui" }
+  ]
 }

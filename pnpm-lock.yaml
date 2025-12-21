@@ -17,6 +17,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@packages/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@tanstack/react-router':
         specifier: ^1.142.7
         version: 1.142.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -66,6 +69,24 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
+
+  packages/api:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/core:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/ui:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
 
 packages:
 
