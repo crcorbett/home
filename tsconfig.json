@@ -2,8 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "composite": false,
-    "strictNullChecks": true
+    "composite": false
   },
   "include": [],
   "references": [

@@ -5,18 +5,36 @@
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
 
+    // Strict type checking
     "strict": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "useUnknownInCatchVariables": true,
+
+    // Code quality
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Module handling
     "skipLibCheck": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
 
+    // Build output
     "declaration": true,
     "declarationMap": true,
     "composite": true,
     "outDir": "${configDir}/dist",
 
+    // Monorepo live types
     "customConditions": ["@packages/source"]
   },
   "exclude": ["${configDir}/dist", "${configDir}/node_modules"]
