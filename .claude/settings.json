@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Update",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "turbo fix"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "turbo check-types"
+          }
+        ]
+      }
+    ]
+  }
+}
