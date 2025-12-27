@@ -26,7 +26,6 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "^4.6.0",
-    "tailwindcss": "^4.1.18",
     "typescript": "catalog:typescript",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4"
