@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 import { seo } from "@packages/core/seo";
-import baseCss from "@packages/ui/src/styles/base.css?url";
+import baseCss from "@packages/ui/styles/base.css?url";
 import {
   createRootRoute,
   HeadContent,

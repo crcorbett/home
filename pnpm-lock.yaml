@@ -45,6 +45,9 @@ importers:
       '@packages/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@packages/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@tanstack/react-router':
         specifier: ^1.142.7
         version: 1.142.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

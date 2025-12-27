@@ -19,7 +19,8 @@
         "types": "./dist/src/*.d.ts",
         "default": "./dist/src/*.js"
       }
-    }
+    },
+    "./styles/*.css": "./src/styles/*.css"
   },
   "scripts": {
     "build": "tsc",
