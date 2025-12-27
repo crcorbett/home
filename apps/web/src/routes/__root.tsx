@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import { seo } from "@packages/core/seo";
+import baseCss from "@packages/ui/src/styles/base.css?url";
 import {
   createRootRoute,
   HeadContent,
@@ -11,7 +12,6 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type * as React from "react";
 import { DefaultCatchBoundary } from "$/components/default-catch-boundary";
 import { NotFound } from "$/components/not-found";
-import appCss from "$/styles/app.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -31,7 +31,7 @@ export const Route = createRootRoute({
       }),
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: baseCss },
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
