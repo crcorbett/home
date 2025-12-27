@@ -1,9 +1,13 @@
 import { Input as InputPrimitive } from "@base-ui/react/input";
-import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({
+  className,
+  type = "text",
+  style,
+  ...props
+}: InputPrimitive.Props) {
   return (
     <InputPrimitive
       className={cn(
@@ -13,6 +17,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       data-slot="input"
       type={type}
       {...props}
+      {...(style !== undefined && { style })}
     />
   );
 }

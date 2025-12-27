@@ -89,7 +89,7 @@ function ComboboxContent({
   sideOffset = 6,
   align = "start",
   alignOffset = 0,
-  anchor,
+  anchor = null,
   ...props
 }: ComboboxPrimitive.Popup.Props &
   Pick<

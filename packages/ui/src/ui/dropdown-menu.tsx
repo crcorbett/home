@@ -151,7 +151,7 @@ function DropdownMenuSubContent({
 function DropdownMenuCheckboxItem({
   className,
   children,
-  checked,
+  checked = false,
   ...props
 }: MenuPrimitive.CheckboxItem.Props) {
   return (

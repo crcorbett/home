@@ -33,6 +33,7 @@ function Badge({
   render,
   ...props
 }: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+  const renderProp = render ?? <span />;
   return useRender({
     defaultTagName: "span",
     props: mergeProps<"span">(
@@ -41,7 +42,7 @@ function Badge({
       },
       props
     ),
-    render,
+    render: renderProp,
     state: {
       slot: "badge",
       variant,
