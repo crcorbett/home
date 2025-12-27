@@ -1,5 +1,7 @@
 import type { Plugin } from "@opencode-ai/plugin";
 
+const UNFIXED_ERRORS_PATTERN = /Found \d+ errors?\./;
+
 export const HooksPlugin: Plugin = ({ $, client }) => {
   async function handleLintFailure(output: string) {
     const sessions = await client.session.list();
@@ -40,7 +42,10 @@ export const HooksPlugin: Plugin = ({ $, client }) => {
         });
         const result = await $`turbo fix`.quiet().nothrow();
 
-        if (result.exitCode === 0) {
+        const output = result.stderr || result.stdout;
+        const hasUnfixedErrors = UNFIXED_ERRORS_PATTERN.test(output);
+
+        if (result.exitCode === 0 && !hasUnfixedErrors) {
           await client.tui.showToast({
             body: { message: "Turbo fix successful", variant: "success" },
           });
@@ -48,7 +53,7 @@ export const HooksPlugin: Plugin = ({ $, client }) => {
           await client.tui.showToast({
             body: { message: "Turbo fix failed", variant: "error" },
           });
-          await handleLintFailure(result.stderr || result.stdout);
+          await handleLintFailure(output);
         }
       }
 
