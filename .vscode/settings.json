@@ -32,5 +32,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "always",
     "source.organizeImports.biome": "always"
-  }
+  },
+  "terminal.integrated.macOptionIsMeta": true
 }
