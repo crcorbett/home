@@ -23,7 +23,7 @@ This document describes our TypeScript monorepo setup, which implements the "liv
 
 ## Overview
 
-Our monorepo uses pnpm workspaces with the following structure:
+Our monorepo uses Bun workspaces with the following structure:
 
 ```
 home/
@@ -35,7 +35,7 @@ home/
 │   └── ui/               # Shared UI components
 ├── tsconfig.base.json    # Shared TypeScript configuration
 ├── tsconfig.json         # Root project references
-├── pnpm-workspace.yaml   # Workspace definition
+├── package.json          # Workspace definition
 └── turbo.json            # Turborepo configuration
 ```
 
@@ -512,7 +512,7 @@ Live types work across package boundaries—no additional configuration needed.
 When deploying:
 
 ```bash
-pnpm build
+bun run build
 ```
 
 This runs Turborepo, which:
@@ -558,7 +558,7 @@ Production builds use the `default` export condition, resolving to compiled `.js
 **Symptom**: Types resolve in development but `tsc` fails.
 
 **Solutions**:
-1. Check that `dist/` directories exist for all packages (run `pnpm build` once)
+1. Check that `dist/` directories exist for all packages (run `bun run build` once)
 2. Verify `declaration` and `composite` are enabled in packages
 3. Ensure export conditions have valid `types` and `default` paths
 
@@ -569,5 +569,5 @@ Production builds use the `default` export condition, resolving to compiled `.js
 - [Live types in a TypeScript monorepo](https://colinhacks.com/essays/live-types-typescript-monorepo) — The essay that inspired this setup
 - [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html)
 - [Node.js Conditional Exports](https://nodejs.org/api/packages.html#conditional-exports)
-- [pnpm Workspaces](https://pnpm.io/workspaces)
+- [Bun Workspaces](https://bun.sh/docs/pm/workspaces)
 - [Turborepo Caching](https://turbo.build/repo/docs/crafting-your-repository/caching)
