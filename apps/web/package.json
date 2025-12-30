@@ -4,10 +4,10 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build && tsc --noEmit",
-    "preview": "vite preview",
-    "start": "node .output/server/index.mjs"
+    "dev": "bun --bun vite dev",
+    "build": "bun --bun vite build && tsc --noEmit",
+    "preview": "bun --bun vite preview",
+    "start": "bun run .output/server/index.mjs"
   },
   "dependencies": {
     "@packages/core": "workspace:*",
@@ -15,6 +15,7 @@
     "@tanstack/react-router": "^1.142.7",
     "@tanstack/react-router-devtools": "^1.142.7",
     "@tanstack/react-start": "^1.142.7",
+    "nitro": "^3.0.1-alpha.1",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "tailwind-merge": "^2.6.0",
@@ -28,6 +29,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "typescript": "catalog:typescript",
     "vite": "^7.1.7",
+    "vite-plugin-mkcert": "^1.17.9",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }
