@@ -11,6 +11,10 @@
     "deepwiki": {
       "type": "remote",
       "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "linear-cooper": {
+      "type": "remote",
+      "url": "https://mcp.linear.app/mcp"
     }
   }
 }
