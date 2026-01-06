@@ -3,7 +3,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
-import mkcert from "vite-plugin-mkcert";
+// import mkcert from "vite-plugin-mkcert";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
@@ -23,6 +23,6 @@ export default defineConfig({
     }),
     nitro({ preset: "bun" }),
     viteReact(),
-    mkcert(),
+    // mkcert(),
   ],
 });
