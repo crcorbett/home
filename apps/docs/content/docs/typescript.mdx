@@ -1,3 +1,8 @@
+---
+title: TypeScript Monorepo Configuration
+description: Our TypeScript monorepo setup implementing the "live types" pattern for an optimal developer experience
+---
+
 # TypeScript Monorepo Configuration
 
 This document describes our TypeScript monorepo setup, which implements the "live types" pattern for an optimal developer experience. The approach is heavily inspired by [Colin McDonnell's essay on live types in TypeScript monorepos](https://colinhacks.com/essays/live-types-typescript-monorepo).
@@ -8,12 +13,6 @@ This document describes our TypeScript monorepo setup, which implements the "liv
 - [The Problem: Dead Types](#the-problem-dead-types)
 - [Our Solution: Custom Export Conditions](#our-solution-custom-export-conditions)
 - [Configuration Deep Dive](#configuration-deep-dive)
-  - [Base tsconfig](#base-tsconfig)
-  - [Root tsconfig](#root-tsconfig)
-  - [Package tsconfigs](#package-tsconfigs)
-  - [App tsconfigs](#app-tsconfigs)
-  - [Package Exports](#package-exports)
-  - [Vite Configuration](#vite-configuration)
 - [Trade-offs and Decisions](#trade-offs-and-decisions)
 - [Working with AI Agents](#working-with-ai-agents)
 - [Common Patterns](#common-patterns)
