@@ -12,23 +12,23 @@
   "dependencies": {
     "@packages/core": "workspace:*",
     "@packages/ui": "workspace:*",
-    "@tanstack/react-router": "^1.142.7",
-    "@tanstack/react-router-devtools": "^1.142.7",
-    "@tanstack/react-start": "^1.142.7",
-    "nitro": "^3.0.1-alpha.1",
+    "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router-devtools": "catalog:tanstack",
+    "@tanstack/react-start": "catalog:tanstack",
+    "nitro": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "tailwind-merge": "^2.6.0",
-    "zod": "^3.24.2"
+    "tailwind-merge": "catalog:utils",
+    "zod": "catalog:utils"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "catalog:build",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@vitejs/plugin-react": "catalog:build",
     "typescript": "catalog:typescript",
-    "vite": "^7.1.7",
-    "vite-plugin-mkcert": "^1.17.9",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite": "catalog:build",
+    "vite-plugin-mkcert": "catalog:build",
+    "vite-tsconfig-paths": "catalog:build"
   }
 }
