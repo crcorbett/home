@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -23,6 +25,7 @@ jobs:
         run: bun install
 
       - name: Create Release Pull Request
+        id: changesets
         uses: changesets/action@v1
         with:
           version: bun run changeset:version
@@ -34,21 +37,21 @@ jobs:
       - name: Tag app releases
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
-          DATE=$(date +%Y-%m-%d)
-
           # Check if apps were updated in this push
           for app in web docs admin; do
             if git diff HEAD~1 --name-only | grep -q "apps/$app/CHANGELOG.md"; then
-              TAG="${app}@${DATE}"
+              # Get version from package.json
+              VERSION=$(cat apps/$app/package.json | grep '"version"' | head -1 | sed 's/.*"version": "\(.*\)".*/\1/')
+              TAG="${app}@${VERSION}"
 
-              # Delete existing tag for today if it exists
-              git tag -d "$TAG" 2>/dev/null || true
-              git push origin ":refs/tags/$TAG" 2>/dev/null || true
-
-              # Create new tag
-              git tag "$TAG"
-              git push origin "$TAG"
-              echo "Created tag: $TAG"
+              # Check if tag already exists
+              if git rev-parse "$TAG" >/dev/null 2>&1; then
+                echo "Tag $TAG already exists, skipping"
+              else
+                git tag "$TAG"
+                git push origin "$TAG"
+                echo "Created tag: $TAG"
+              fi
             fi
           done
         env:

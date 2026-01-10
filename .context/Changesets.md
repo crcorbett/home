@@ -79,17 +79,17 @@ Developer:
 CI (on merge to main):
 1. Detects pending changesets
 2. Opens "Version Packages" PR with bumped versions + changelogs
-3. When that PR merges → creates date-based tags for apps
+3. When that PR merges → creates version tags for apps
 ```
 
 ### App Release Tags
 
-Apps are tagged with dates (created automatically by CI):
+Apps are tagged with their version (created automatically by CI):
 
 ```
-web@2024-01-10
-docs@2024-01-10
-admin@2024-01-10
+web@0.1.0
+docs@0.1.0
+admin@0.1.0
 ```
 
 This links deployments to specific points in history. The CHANGELOG.md in each app tracks what changed.
