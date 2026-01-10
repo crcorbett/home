@@ -1,0 +1,200 @@
+{
+  "prd_id": 2,
+  "title": "Fumadocs TanStack Start Documentation Site",
+  "completion_promise": "DONE",
+  "status": "in_progress",
+  "tasks": [
+    {
+      "id": "2.1",
+      "task": "Create directory structure",
+      "description": "Create apps/docs with src/routes, src/lib, content/docs, and public directories",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.2",
+      "task": "Create package.json",
+      "description": "Create package.json with fumadocs-core, fumadocs-ui, fumadocs-mdx, @types/mdx, TanStack dependencies using catalog references",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.3",
+      "task": "Install dependencies",
+      "description": "Run bun install to install all dependencies",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.4",
+      "task": "Create source.config.ts",
+      "description": "Configure Fumadocs MDX with defineDocs pointing to content/docs",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.5",
+      "task": "Create vite.config.ts",
+      "description": "Configure Vite with fumadocs-mdx, tailwindcss, tanstackStart, and viteReact plugins",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.6",
+      "task": "Create tsconfig.json",
+      "description": "Extend base config, add paths for fumadocs-mdx:collections and .source",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.7",
+      "task": "Create .gitignore",
+      "description": "Add node_modules, dist, .output, .source to gitignore",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "2.8",
+      "task": "Create src/lib/source.ts",
+      "description": "Create Fumadocs source loader with baseUrl /docs",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.9",
+      "task": "Create src/lib/layout.shared.tsx",
+      "description": "Create baseOptions function for DocsLayout nav configuration",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.10",
+      "task": "Create src/styles/app.css",
+      "description": "Import tailwindcss and fumadocs-ui CSS presets",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.11",
+      "task": "Create src/routes/__root.tsx",
+      "description": "Create root route with RootProvider from fumadocs-ui/provider/tanstack",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.12",
+      "task": "Create src/routes/index.tsx",
+      "description": "Create index route that redirects to /docs",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.13",
+      "task": "Create src/routes/docs/$.tsx",
+      "description": "Create docs splat route with server loader, client loader, DocsLayout and DocsPage",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.14",
+      "task": "Create src/routes/api/search.ts",
+      "description": "Create search API route using createFromSource",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.15",
+      "task": "Create src/router.tsx",
+      "description": "Create router configuration file if needed by TanStack Start",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.16",
+      "task": "Create content/docs/index.mdx",
+      "description": "Create documentation homepage with frontmatter",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.17",
+      "task": "Migrate typescript.md",
+      "description": "Convert typescript.md to content/docs/typescript.mdx with frontmatter",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.18",
+      "task": "Migrate phantom-dependencies.md",
+      "description": "Convert phantom-dependencies.md to content/docs/phantom-dependencies.mdx with frontmatter",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.19",
+      "task": "Update root tsconfig.json",
+      "description": "Add apps/docs to project references",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "2.20",
+      "task": "Start dev server and debug",
+      "description": "Run bun run dev and use Playwriter to verify documentation renders correctly",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "2.21",
+      "task": "Fix any issues found",
+      "description": "Debug and fix any rendering, routing, or configuration issues",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "2.22",
+      "task": "Verify TypeScript",
+      "description": "Run bun run check-types and fix any type errors",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "2.23",
+      "task": "Verify build",
+      "description": "Run bun run build and ensure it succeeds",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "2.24",
+      "task": "Commit completed work",
+      "description": "Commit the Fumadocs documentation site",
+      "status": "pending",
+      "phase": "completion",
+      "notes": ""
+    }
+  ]
+}
