@@ -1,0 +1,392 @@
+{
+  "prd_id": 4,
+  "title": "Comprehensive Monorepo Documentation",
+  "completion_promise": "DONE",
+  "status": "pending",
+  "tasks": [
+    {
+      "id": "4.1",
+      "task": "Create documentation directory structure",
+      "description": "Create all subdirectories under content/docs/ for getting-started, architecture, typescript, tooling, ai-integrations, ci-cd, ui-components, guides, and reference sections",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "4.2",
+      "task": "Create meta.json navigation files",
+      "description": "Create meta.json files for root and each section to configure sidebar navigation with proper titles, icons, and ordering",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "4.3",
+      "task": "Update layout configuration",
+      "description": "Update src/lib/layout.shared.tsx with navigation links, GitHub link, and improved layout options",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "4.4",
+      "task": "Create enhanced homepage",
+      "description": "Replace index.mdx with a comprehensive homepage featuring hero section, feature cards, and quick start links",
+      "status": "pending",
+      "phase": "setup",
+      "notes": ""
+    },
+    {
+      "id": "4.5",
+      "task": "Write getting-started/index.mdx",
+      "description": "Create quick start guide overview with prerequisites and first steps",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.6",
+      "task": "Write getting-started/installation.mdx",
+      "description": "Document cloning, installing dependencies, and initial setup",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.7",
+      "task": "Write getting-started/project-structure.mdx",
+      "description": "Explain the complete directory layout with purpose of each directory",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.8",
+      "task": "Write getting-started/first-steps.mdx",
+      "description": "Guide for running dev server, making changes, and basic workflow",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.9",
+      "task": "Write architecture/index.mdx",
+      "description": "High-level architecture overview with diagram",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.10",
+      "task": "Write architecture/monorepo-design.mdx",
+      "description": "Explain monorepo philosophy, workspace structure, and design decisions",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.11",
+      "task": "Write architecture/apps.mdx",
+      "description": "Document all apps (web, admin, docs) with their purposes and configurations",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.12",
+      "task": "Write architecture/packages.mdx",
+      "description": "Document shared packages (core, api, ui) with exports and usage",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.13",
+      "task": "Write architecture/dependencies.mdx",
+      "description": "Explain dependency management, catalogs, and workspace references",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.14",
+      "task": "Write typescript/index.mdx",
+      "description": "TypeScript configuration overview",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.15",
+      "task": "Write typescript/configuration.mdx",
+      "description": "Explain tsconfig.base.json and per-project configurations",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.16",
+      "task": "Migrate typescript/live-types.mdx",
+      "description": "Migrate existing typescript.mdx content to this location with improvements",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.17",
+      "task": "Write typescript/strict-mode.mdx",
+      "description": "Document strict TypeScript settings and their benefits",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.18",
+      "task": "Write tooling/index.mdx",
+      "description": "Development tooling overview",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.19",
+      "task": "Write tooling/bun.mdx",
+      "description": "Document Bun package manager, runtime, and workspace features. Include phantom-dependencies content.",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.20",
+      "task": "Write tooling/turborepo.mdx",
+      "description": "Document Turborepo task orchestration, caching, and turbo.json configuration",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.21",
+      "task": "Write tooling/vite.mdx",
+      "description": "Document Vite build tool configuration and plugins",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.22",
+      "task": "Write tooling/ultracite.mdx",
+      "description": "Document Ultracite linting/formatting (oxlint, oxfmt) configuration and usage",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.23",
+      "task": "Write ai-integrations/index.mdx",
+      "description": "AI integrations overview explaining the AI-first approach",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.24",
+      "task": "Write ai-integrations/mcp-servers.mdx",
+      "description": "Document .mcp.json configuration with Playwriter, DeepWiki, and Linear MCPs",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.25",
+      "task": "Write ai-integrations/claude-code.mdx",
+      "description": "Document Claude Code integration with hooks in .claude/settings.json",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.26",
+      "task": "Write ai-integrations/cursor.mdx",
+      "description": "Document Cursor IDE integration and .cursor/hooks.json",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.27",
+      "task": "Write ai-integrations/git-submodules.mdx",
+      "description": "Document .context/ git submodules for AI context (TanStack Router, Fumadocs)",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.28",
+      "task": "Write ci-cd/index.mdx",
+      "description": "CI/CD overview",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.29",
+      "task": "Write ci-cd/github-actions.mdx",
+      "description": "Document all GitHub Actions workflows (ci.yml, release.yml, claude.yml)",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.30",
+      "task": "Write ci-cd/changesets.mdx",
+      "description": "Document Changesets version management workflow",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.31",
+      "task": "Write ci-cd/deployment.mdx",
+      "description": "Document Vercel deployment setup and configuration",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.32",
+      "task": "Write ui-components/index.mdx",
+      "description": "Document @packages/ui component library overview",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.33",
+      "task": "Write ui-components/components.mdx",
+      "description": "Document available UI components with usage examples",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.34",
+      "task": "Write guides/index.mdx",
+      "description": "Guides section overview",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.35",
+      "task": "Write guides/adding-an-app.mdx",
+      "description": "Step-by-step guide for adding a new application to the monorepo",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.36",
+      "task": "Write guides/adding-a-package.mdx",
+      "description": "Step-by-step guide for adding a new shared package",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.37",
+      "task": "Write guides/making-changes.mdx",
+      "description": "Development workflow guide covering branches, testing, and committing",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.38",
+      "task": "Write guides/releasing.mdx",
+      "description": "Release process guide using Changesets",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.39",
+      "task": "Write reference/index.mdx",
+      "description": "Reference section overview",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.40",
+      "task": "Write reference/commands.mdx",
+      "description": "Complete reference of all available npm/bun commands",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.41",
+      "task": "Write reference/configuration.mdx",
+      "description": "Reference for all configuration files in the template",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.42",
+      "task": "Write reference/troubleshooting.mdx",
+      "description": "Common issues and solutions including known bugs",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.43",
+      "task": "Remove old documentation files",
+      "description": "Remove typescript.mdx and phantom-dependencies.mdx from root after migration",
+      "status": "pending",
+      "phase": "implementation",
+      "notes": ""
+    },
+    {
+      "id": "4.44",
+      "task": "Verify type checking",
+      "description": "Run bun run check-types and fix any type errors",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "4.45",
+      "task": "Verify build",
+      "description": "Run bun run build and ensure docs app builds successfully",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "4.46",
+      "task": "Test navigation and search",
+      "description": "Use Playwriter to verify sidebar navigation, page links, and search functionality",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "4.47",
+      "task": "Review content quality",
+      "description": "Review all documentation for accuracy, completeness, and clarity",
+      "status": "pending",
+      "phase": "testing",
+      "notes": ""
+    },
+    {
+      "id": "4.48",
+      "task": "Final commit",
+      "description": "Create final commit with all documentation changes",
+      "status": "pending",
+      "phase": "completion",
+      "notes": ""
+    }
+  ]
+}
