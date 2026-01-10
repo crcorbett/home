@@ -69,3 +69,6 @@ playwright/.cache/
 .env.sentry-build-plugin
 .vercel
 .claude/ralph-loop.local.md
+
+# Temporary files
+tmp/
