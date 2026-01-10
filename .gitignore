@@ -25,7 +25,7 @@ coverage/
 .vinxi/
 .nitro/
 .tanstack/
-api/
+**/api/_build/
 server/build/
 public/build/
 
