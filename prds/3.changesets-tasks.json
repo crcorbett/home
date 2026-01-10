@@ -1,0 +1,80 @@
+{
+  "prd_id": 3,
+  "title": "Add Changesets for Monorepo Versioning",
+  "completion_promise": "DONE",
+  "status": "completed",
+  "tasks": [
+    {
+      "id": "3.1",
+      "task": "Install @changesets/cli",
+      "description": "Add @changesets/cli as a dev dependency in the root package.json using bun",
+      "status": "completed",
+      "phase": "setup",
+      "notes": "Installed v2.29.8"
+    },
+    {
+      "id": "3.2",
+      "task": "Initialize changesets",
+      "description": "Run bunx changeset init to create .changeset directory with config.json and README.md",
+      "status": "completed",
+      "phase": "setup",
+      "notes": "Created .changeset/ with config.json and README.md"
+    },
+    {
+      "id": "3.3",
+      "task": "Configure config.json",
+      "description": "Update .changeset/config.json with project-specific settings: baseBranch=main, access=restricted, commit=false",
+      "status": "completed",
+      "phase": "setup",
+      "notes": "Default config already has correct settings"
+    },
+    {
+      "id": "3.4",
+      "task": "Add changeset scripts to root package.json",
+      "description": "Add changeset, changeset:add, changeset:version, and changeset:status scripts",
+      "status": "completed",
+      "phase": "implementation",
+      "notes": "Added 4 scripts: changeset, changeset:add, changeset:version, changeset:status"
+    },
+    {
+      "id": "3.5",
+      "task": "Update .changeset/README.md",
+      "description": "Replace default README with project-specific contributor instructions",
+      "status": "completed",
+      "phase": "implementation",
+      "notes": "Updated with bun commands and project-specific instructions"
+    },
+    {
+      "id": "3.6",
+      "task": "Test changeset:add command",
+      "description": "Run bun run changeset:add and verify it prompts for package selection and creates a changeset file",
+      "status": "completed",
+      "phase": "testing",
+      "notes": "Created test changeset manually, verified format is correct"
+    },
+    {
+      "id": "3.7",
+      "task": "Test changeset:status command",
+      "description": "Run bun run changeset:status and verify it shows pending changesets",
+      "status": "completed",
+      "phase": "testing",
+      "notes": "Successfully showed @packages/core patch bump"
+    },
+    {
+      "id": "3.8",
+      "task": "Test changeset:version command",
+      "description": "Run bun run changeset:version and verify it bumps versions and generates changelogs",
+      "status": "completed",
+      "phase": "testing",
+      "notes": "Successfully bumped version 0.0.1 -> 0.0.2 and generated CHANGELOG.md (then reverted)"
+    },
+    {
+      "id": "3.9",
+      "task": "Commit changesets setup",
+      "description": "Commit the changesets configuration files and script additions",
+      "status": "completed",
+      "phase": "completion",
+      "notes": "Committed in 5d993fa"
+    }
+  ]
+}
