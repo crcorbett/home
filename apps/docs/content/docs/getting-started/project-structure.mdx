@@ -1,0 +1,156 @@
+---
+title: Project Structure
+description: Understanding the monorepo directory layout
+---
+
+# Project Structure
+
+This monorepo follows a structured layout that separates applications from shared packages.
+
+## Directory Overview
+
+```
+template/
+├── apps/                    # Application packages
+│   ├── web/                 # Main consumer application
+│   ├── admin/               # Internal admin dashboard
+│   └── docs/                # Documentation site (you're here!)
+│
+├── packages/                # Shared library packages
+│   ├── core/                # Business logic and utilities
+│   ├── ui/                  # React component library
+│   └── api/                 # API client utilities
+│
+├── .github/                 # GitHub configuration
+│   └── workflows/           # CI/CD workflows
+│
+├── .claude/                 # Claude Code configuration
+├── .cursor/                 # Cursor IDE configuration
+├── .config/                 # Shared AI configurations
+├── .context/                # Git submodules for AI context
+│
+├── .changeset/              # Changesets configuration
+├── turbo.json               # Turborepo configuration
+├── tsconfig.base.json       # Base TypeScript configuration
+├── package.json             # Root workspace configuration
+└── bun.lock                 # Dependency lock file
+```
+
+## Applications (`apps/`)
+
+Each application is a self-contained package with its own dependencies and configuration.
+
+### Web (`apps/web/`)
+
+The main consumer-facing application.
+
+```
+apps/web/
+├── src/
+│   ├── routes/              # File-based routing (TanStack Router)
+│   ├── components/          # React components
+│   └── utils/               # Utility functions
+├── public/                  # Static assets
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Admin (`apps/admin/`)
+
+Internal admin dashboard with the same architecture as the web app.
+
+### Docs (`apps/docs/`)
+
+This documentation site, built with Fumadocs and TanStack Start.
+
+```
+apps/docs/
+├── content/
+│   └── docs/                # MDX documentation files
+├── src/
+│   ├── routes/              # File-based routing
+│   └── lib/                 # Shared utilities
+├── source.config.ts         # Fumadocs configuration
+└── vite.config.ts
+```
+
+## Packages (`packages/`)
+
+Shared packages that can be used across all applications.
+
+### Core (`packages/core/`)
+
+Business logic and utilities shared across apps.
+
+```
+packages/core/
+├── src/
+│   ├── seo.ts               # SEO utilities
+│   └── user.ts              # User types and functions
+├── package.json
+└── tsconfig.json
+```
+
+### UI (`packages/ui/`)
+
+React component library with Tailwind CSS styling.
+
+```
+packages/ui/
+├── src/
+│   ├── button.tsx           # Button component
+│   ├── input.tsx            # Input component
+│   ├── card.tsx             # Card component
+│   └── ...                  # More components
+├── package.json
+└── tsconfig.json
+```
+
+### API (`packages/api/`)
+
+API client utilities (placeholder for future implementation).
+
+## Configuration Files
+
+### Root Configuration
+
+| File                 | Purpose                                         |
+| -------------------- | ----------------------------------------------- |
+| `package.json`       | Workspace configuration and shared dependencies |
+| `turbo.json`         | Turborepo task pipeline configuration           |
+| `tsconfig.base.json` | Base TypeScript settings for all packages       |
+| `.oxfmtrc.jsonc`     | Code formatting configuration                   |
+| `.oxlintrc.json`     | Linting rules configuration                     |
+
+### GitHub Configuration
+
+| File                            | Purpose                         |
+| ------------------------------- | ------------------------------- |
+| `.github/workflows/ci.yml`      | Continuous integration workflow |
+| `.github/workflows/release.yml` | Automated release workflow      |
+| `.github/workflows/claude.yml`  | Claude Code GitHub integration  |
+
+### AI Configuration
+
+| File                    | Purpose                       |
+| ----------------------- | ----------------------------- |
+| `.mcp.json`             | MCP server configuration      |
+| `.claude/settings.json` | Claude Code hooks             |
+| `.cursor/hooks.json`    | Cursor IDE hooks              |
+| `.context/`             | Git submodules for AI context |
+
+## Package Naming Convention
+
+Shared packages use the `@packages/` scope:
+
+- `@packages/core`
+- `@packages/ui`
+- `@packages/api`
+
+This makes imports clear and consistent:
+
+```typescript
+import { seo } from "@packages/core/seo";
+import { Button } from "@packages/ui/button";
+```

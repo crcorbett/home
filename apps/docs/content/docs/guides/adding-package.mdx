@@ -1,0 +1,195 @@
+---
+title: Adding a Package
+description: Create a new shared package in the monorepo
+---
+
+# Adding a Package
+
+This guide walks through creating a new shared package in the monorepo.
+
+## 1. Create Directory Structure
+
+```bash
+mkdir -p packages/my-package/src
+```
+
+## 2. Create package.json
+
+```json title="packages/my-package/package.json"
+{
+  "name": "@packages/my-package",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "@packages/source": "./src/index.ts",
+        "types": "./dist/src/index.d.ts",
+        "default": "./dist/src/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "@packages/source": "./src/*.ts",
+        "types": "./dist/src/*.d.ts",
+        "default": "./dist/src/*.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}
+```
+
+## 3. Create tsconfig.json
+
+```json title="packages/my-package/tsconfig.json"
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["./src/**/*.ts"]
+}
+```
+
+## 4. Create Entry Point
+
+```typescript title="packages/my-package/src/index.ts"
+export function hello(name: string): string {
+  return `Hello, ${name}!`;
+}
+```
+
+## 5. Add to Root tsconfig.json
+
+```json title="tsconfig.json"
+{
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./apps/admin" },
+    { "path": "./apps/docs" },
+    { "path": "./packages/core" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/api" },
+    { "path": "./packages/my-package" }  // Add this
+  ]
+}
+```
+
+## 6. Install Dependencies
+
+```bash
+bun install
+```
+
+## 7. Use in an App
+
+Add the package dependency:
+
+```json title="apps/web/package.json"
+{
+  "dependencies": {
+    "@packages/my-package": "workspace:*"
+  }
+}
+```
+
+Import and use:
+
+```typescript
+import { hello } from "@packages/my-package";
+
+console.log(hello("World")); // "Hello, World!"
+```
+
+## 8. Add to Turbo Pipeline
+
+The package automatically inherits from `turbo.json`:
+
+```json title="turbo.json"
+{
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    }
+  }
+}
+```
+
+## Verification
+
+Test your new package:
+
+```bash
+# Type check
+bun run check-types
+
+# Build
+bun run build
+
+# Verify exports
+bun --eval "import { hello } from '@packages/my-package'; console.log(hello('Test'));"
+```
+
+## Adding Multiple Entry Points
+
+For packages with multiple exports:
+
+```typescript title="packages/my-package/src/utils.ts"
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+```
+
+Import via subpath:
+
+```typescript
+import { capitalize } from "@packages/my-package/utils";
+```
+
+The wildcard export in `package.json` handles this automatically.
+
+## Adding Dependencies
+
+### External Dependencies
+
+```bash
+cd packages/my-package
+bun add lodash
+```
+
+### Internal Dependencies
+
+```json title="packages/my-package/package.json"
+{
+  "dependencies": {
+    "@packages/core": "workspace:*"
+  }
+}
+```
+
+### Catalog Dependencies
+
+Use versions from root catalog:
+
+```json
+{
+  "dependencies": {
+    "zod": "catalog:"
+  }
+}
+```
+
+## Best Practices
+
+1. **Keep packages focused** - One responsibility per package
+2. **Export types explicitly** - Use `export type` for type-only exports
+3. **Document public APIs** - Add JSDoc comments
+4. **Test in isolation** - Packages should be testable standalone

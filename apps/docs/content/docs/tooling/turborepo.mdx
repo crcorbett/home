@@ -1,0 +1,263 @@
+---
+title: Turborepo
+description: Task orchestration, caching, and turbo.json configuration
+---
+
+# Turborepo
+
+Turborepo is a high-performance build system for JavaScript/TypeScript monorepos. It orchestrates tasks across packages with intelligent caching.
+
+## Key Features
+
+- **Parallel Execution** - Runs independent tasks simultaneously
+- **Caching** - Skips work that hasn't changed
+- **Dependency Awareness** - Builds packages in correct order
+- **Remote Caching** - Share cache across machines (optional)
+
+## Configuration
+
+The `turbo.json` file defines the task pipeline:
+
+```json title="turbo.json"
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".output/**", ".vercel/output/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "//#check": {},
+    "//#fix": {
+      "cache": false
+    }
+  }
+}
+```
+
+## Task Configuration
+
+### Build Task
+
+```json
+{
+  "build": {
+    "dependsOn": ["^build"],
+    "outputs": [".output/**", ".vercel/output/**", "dist/**"]
+  }
+}
+```
+
+- `dependsOn: ["^build"]` - Build dependencies first (topological order)
+- `outputs` - Directories to cache
+
+### Dev Task
+
+```json
+{
+  "dev": {
+    "cache": false,
+    "persistent": true
+  }
+}
+```
+
+- `cache: false` - Never cache (dev servers are long-running)
+- `persistent: true` - Don't terminate when other tasks finish
+
+### Type Checking
+
+```json
+{
+  "check-types": {
+    "dependsOn": ["^check-types"]
+  }
+}
+```
+
+Runs `check-types` in each package, respecting dependencies.
+
+### Root-Only Tasks
+
+```json
+{
+  "//#check": {},
+  "//#fix": {
+    "cache": false
+  }
+}
+```
+
+The `//#` prefix means "root only" - these tasks run only at the workspace root.
+
+## Running Tasks
+
+### All Packages
+
+```bash
+# Run dev in all packages
+bun turbo dev
+
+# Build all packages
+bun turbo build
+
+# Type check all packages
+bun turbo check-types
+```
+
+### Filtered Packages
+
+```bash
+# Only web app
+bun turbo build --filter=web
+
+# Only packages
+bun turbo build --filter="./packages/*"
+
+# Package and its dependents
+bun turbo build --filter=@packages/core...
+
+# Package and its dependencies
+bun turbo build --filter=...@packages/core
+```
+
+## Caching
+
+Turborepo caches task outputs based on:
+
+1. **Input files** - Source code changes
+2. **Dependencies** - package.json changes
+3. **Environment** - Configured environment variables
+4. **Task configuration** - turbo.json changes
+
+### Cache Location
+
+Local cache is stored in `.turbo/`:
+
+```
+.turbo/
+└── cache/
+    └── [hash].tar.zst  # Compressed outputs
+```
+
+### Viewing Cache Status
+
+```bash
+# See what would run vs cached
+bun turbo build --dry-run
+
+# Force rebuild (skip cache)
+bun turbo build --force
+```
+
+### Remote Caching
+
+Enable remote caching for team sharing:
+
+```bash
+# Login to Vercel
+bunx turbo login
+
+# Link to project
+bunx turbo link
+```
+
+## Dependency Graph
+
+View the task dependency graph:
+
+```bash
+bun turbo build --graph
+```
+
+This outputs a visualization of what tasks depend on what.
+
+## Common Patterns
+
+### Running Tests
+
+Add a test task:
+
+```json
+{
+  "test": {
+    "dependsOn": ["^build"],
+    "outputs": ["coverage/**"]
+  }
+}
+```
+
+### Linting
+
+Add a lint task:
+
+```json
+{
+  "lint": {
+    "dependsOn": ["^build"],
+    "outputs": []
+  }
+}
+```
+
+### Watch Mode
+
+For watch tasks, disable caching:
+
+```json
+{
+  "dev": {
+    "cache": false,
+    "persistent": true
+  }
+}
+```
+
+## Integration with CI
+
+### GitHub Actions
+
+```yaml
+- name: Build
+  run: bun turbo build
+
+- name: Type Check
+  run: bun turbo check-types
+```
+
+### Caching in CI
+
+Cache `.turbo/` between runs:
+
+```yaml
+- uses: actions/cache@v3
+  with:
+    path: .turbo
+    key: turbo-${{ hashFiles('**/bun.lock') }}
+```
+
+## Troubleshooting
+
+### Cache Not Working
+
+1. Check `outputs` in turbo.json includes your build outputs
+2. Verify files aren't in `.gitignore` (affects hashing)
+3. Try `--force` to bypass cache
+
+### Wrong Build Order
+
+1. Verify `dependsOn` is correct
+2. Check `workspace:*` dependencies in package.json
+3. Run `--graph` to visualize
+
+### Task Not Found
+
+1. Ensure script exists in package's `package.json`
+2. Check task is defined in `turbo.json`

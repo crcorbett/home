@@ -1,0 +1,120 @@
+---
+title: Monorepo Design
+description: Philosophy, workspace structure, and design decisions
+---
+
+# Monorepo Design
+
+This document explains why we chose a monorepo architecture and how the workspace is structured.
+
+## Why a Monorepo?
+
+A monorepo stores multiple projects in a single repository. This approach offers several advantages:
+
+### Atomic Changes
+
+Changes that span multiple packages can be made in a single commit:
+
+```bash
+# Change a component in @packages/ui AND update its usage in apps/web
+git commit -m "feat: add variant prop to Button component"
+```
+
+### Consistent Tooling
+
+All projects share the same development tools, linting rules, and TypeScript configuration. Changes to tooling apply everywhere instantly.
+
+### Simplified Dependencies
+
+Shared packages are linked locally during development. No need to publish to npm or manage complex versioning between internal packages.
+
+### Better Code Reuse
+
+Creating a shared package is trivial - just add a folder to `packages/`. No separate repository setup, CI configuration, or publishing workflow needed.
+
+## Workspace Structure
+
+The monorepo uses Bun workspaces defined in the root `package.json`:
+
+```json title="package.json"
+{
+  "workspaces": ["apps/*", "packages/*"]
+}
+```
+
+This tells Bun to treat every folder in `apps/` and `packages/` as a separate package.
+
+### Apps Directory
+
+Applications that get deployed:
+
+```
+apps/
+├── web/      # Main user-facing app
+├── admin/    # Internal admin dashboard
+└── docs/     # Documentation site
+```
+
+Apps are private packages that don't get published to npm.
+
+### Packages Directory
+
+Shared libraries used by apps:
+
+```
+packages/
+├── core/     # Business logic and utilities
+├── ui/       # React component library
+└── api/      # API client utilities
+```
+
+Packages can be published to npm or kept internal.
+
+## Dependency Graph
+
+Dependencies flow from apps to packages:
+
+```
+apps/web ──────► @packages/core
+    │               │
+    └──► @packages/ui ──► @packages/core
+
+apps/admin ────► @packages/core
+    │
+    └──► @packages/ui
+
+apps/docs ─────► @packages/core
+```
+
+Packages can depend on each other, but avoid circular dependencies.
+
+## Trade-offs
+
+### Advantages
+
+- **Single source of truth** - One repository for all code
+- **Atomic commits** - Cross-package changes in one commit
+- **Shared configuration** - DRY tooling setup
+- **Easy refactoring** - Find and replace works across everything
+- **Unified CI/CD** - One pipeline for all projects
+
+### Considerations
+
+- **Repository size** - Can grow large over time
+- **Build times** - Mitigated by Turborepo caching
+- **Complexity** - Requires understanding of workspace tooling
+- **Access control** - All code is accessible to all developers
+
+## Alternatives Considered
+
+### Polyrepo (Multiple Repositories)
+
+Each package in its own repository. Good for independent projects but adds coordination overhead.
+
+### Package-Based Monorepo
+
+Using Lerna or Nx with npm publishing between packages. More complex than Bun's native workspaces.
+
+## Conclusion
+
+The monorepo approach with Bun workspaces provides the best balance of simplicity and power for this template. It enables rapid development while maintaining clear boundaries between packages.

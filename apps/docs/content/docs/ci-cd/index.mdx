@@ -1,0 +1,114 @@
+---
+title: CI/CD
+description: Continuous integration and deployment with GitHub Actions
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+# CI/CD
+
+This monorepo uses GitHub Actions for continuous integration and deployment with automated versioning via Changesets.
+
+## Overview
+
+The CI/CD pipeline consists of three main workflows:
+
+<Cards>
+  <Card title="CI Workflow" href="/docs/ci-cd/github-actions">
+    Type checking, linting, and building on every push and PR
+  </Card>
+  <Card title="Release Workflow" href="/docs/ci-cd/changesets">
+    Automated versioning and changelog generation
+  </Card>
+  <Card title="Deployment" href="/docs/ci-cd/deployment">
+    Deploying apps to Vercel
+  </Card>
+</Cards>
+
+## Pipeline Flow
+
+```
+Push to main
+    │
+    ├── CI Workflow
+    │   ├── Type check
+    │   ├── Lint
+    │   └── Build
+    │
+    └── Release Workflow
+        ├── Create version PR (if changesets exist)
+        └── Tag releases (when version PR merges)
+```
+
+## Quick Commands
+
+```bash
+# Run CI checks locally
+bun run check-types
+bun run check
+bun run build
+
+# Create a changeset for your changes
+bun run changeset
+
+# Version packages (usually done by CI)
+bun run changeset:version
+
+# Publish packages (if public)
+bun run changeset:publish
+```
+
+## Key Features
+
+### Automated Type Checking
+
+Every push and PR runs TypeScript type checking across all packages:
+
+```yaml
+- name: Type check
+  run: bun run check-types
+```
+
+### Rust-Based Linting
+
+Fast linting with Ultracite (oxlint + oxfmt):
+
+```yaml
+- name: Lint
+  run: bun run check
+```
+
+### Parallel Builds
+
+Turborepo builds all packages in parallel with caching:
+
+```yaml
+- name: Build
+  run: bun run build
+```
+
+### Changesets Versioning
+
+Automated version management:
+
+1. Create changesets during development
+2. CI creates a version PR
+3. Merging the PR publishes and tags releases
+
+### AI Code Review
+
+Optional AI-powered code review on pull requests:
+
+```yaml
+- name: AI Code Review
+  uses: anthropics/claude-code-action@beta
+```
+
+## Workflow Files
+
+| File                                       | Purpose                |
+| ------------------------------------------ | ---------------------- |
+| `.github/workflows/ci.yml`                 | Main CI pipeline       |
+| `.github/workflows/release.yml`            | Changesets versioning  |
+| `.github/workflows/claude.yml`             | AI assistant on issues |
+| `.github/workflows/claude-code-review.yml` | AI code review         |

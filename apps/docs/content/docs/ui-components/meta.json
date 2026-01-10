@@ -1,0 +1,5 @@
+{
+  "title": "UI Components",
+  "description": "Shared React component library",
+  "pages": ["index", "component-library"]
+}

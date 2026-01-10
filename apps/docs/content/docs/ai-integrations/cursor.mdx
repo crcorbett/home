@@ -1,0 +1,202 @@
+---
+title: Cursor
+description: Cursor IDE integration and hooks configuration
+---
+
+# Cursor
+
+Cursor is an AI-first IDE based on VS Code. This monorepo includes configuration for Cursor integration.
+
+## Configuration
+
+Cursor settings are in the `.cursor/` directory:
+
+```
+.cursor/
+├── hooks.json       # Cursor hooks
+├── mcp.json         # MCP configuration (symlink)
+├── commands/        # Custom commands (symlinks)
+└── rules/           # AI rules (symlinks)
+```
+
+## Hooks
+
+Cursor hooks automate tasks during development:
+
+```json title=".cursor/hooks.json"
+{
+  "afterFileEdit": ["turbo fix"],
+  "stop": ["turbo check-types"]
+}
+```
+
+### afterFileEdit
+
+Runs after Cursor edits a file:
+
+```json
+{
+  "afterFileEdit": ["turbo fix"]
+}
+```
+
+**Behavior:**
+
+- Triggers after any file edit by Cursor AI
+- Runs `turbo fix` for formatting and linting
+- Keeps code style consistent
+
+### stop
+
+Runs when Cursor completes a task:
+
+```json
+{
+  "stop": ["turbo check-types"]
+}
+```
+
+**Behavior:**
+
+- Triggers when AI work is complete
+- Runs type checking
+- Catches errors before you review
+
+## MCP Configuration
+
+Cursor uses MCP for tool access. The configuration symlinks to the root:
+
+```bash
+# .cursor/mcp.json -> ../.mcp.json
+ln -s ../.mcp.json .cursor/mcp.json
+```
+
+This ensures Cursor uses the same MCP servers as Claude Code.
+
+## Commands
+
+Custom commands are in `.cursor/commands/`:
+
+```
+.cursor/commands/
+├── commit.md      -> ../../.config/commands/commit.md
+├── new-prd.md     -> ../../.config/commands/new-prd.md
+└── pr-body.md     -> ../../.config/commands/pr-body.md
+```
+
+These symlink to `.config/commands/` for consistency with Claude Code.
+
+## Rules
+
+AI rules customize behavior:
+
+```
+.cursor/rules/
+└── ultracite.mdc  -> ../../.config/rules/ultracite.mdc
+```
+
+The Ultracite rule configures AI to use our formatting preferences.
+
+## Setup
+
+### Verify Symlinks
+
+Ensure symlinks are correct:
+
+```bash
+ls -la .cursor/
+```
+
+All configuration files should point to `.config/` or root files.
+
+### Fix Broken Symlinks
+
+If symlinks are broken:
+
+```bash
+cd .cursor
+rm mcp.json
+ln -s ../.mcp.json mcp.json
+```
+
+## Best Practices
+
+### Keep Configuration Centralized
+
+Use symlinks to `.config/` for shared configuration:
+
+```
+.config/
+├── commands/       # Shared commands
+│   ├── commit.md
+│   └── new-prd.md
+└── rules/          # Shared rules
+    └── ultracite.mdc
+
+.cursor/
+├── commands/       # Symlinks to .config/commands/
+└── rules/          # Symlinks to .config/rules/
+
+.claude/
+└── commands/       # Symlinks to .config/commands/
+```
+
+### Match Hook Behavior
+
+Keep hooks consistent between Cursor and Claude Code:
+
+| Event      | Cursor          | Claude Code                |
+| ---------- | --------------- | -------------------------- |
+| After edit | `afterFileEdit` | `PostToolUse` (Edit/Write) |
+| On stop    | `stop`          | `Stop`                     |
+
+### Test Hooks
+
+Verify hooks work by making a small edit and checking:
+
+1. Make an edit with Cursor AI
+2. Check that `turbo fix` ran
+3. Complete the task
+4. Check that `turbo check-types` ran
+
+## Troubleshooting
+
+### Hooks Not Running
+
+1. Verify `hooks.json` exists and is valid JSON
+2. Restart Cursor
+3. Check command is correct: `turbo fix`, not `turbo fixes`
+
+### MCP Servers Not Available
+
+1. Check symlink: `ls -la .cursor/mcp.json`
+2. Verify target file exists: `cat .mcp.json`
+3. Restart Cursor
+
+### Commands Not Working
+
+1. Verify symlinks point to valid files
+2. Check command file syntax
+3. Restart Cursor
+
+## Integration Tips
+
+### Use Same Extensions
+
+Install the same VS Code extensions you use normally:
+
+- TypeScript language support
+- Tailwind CSS IntelliSense
+- ESLint/oxc extension
+
+### Configure Format on Save
+
+Enable format on save in Cursor settings:
+
+```json
+{
+  "editor.formatOnSave": true
+}
+```
+
+This complements the `afterFileEdit` hook.

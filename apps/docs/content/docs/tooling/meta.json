@@ -1,0 +1,5 @@
+{
+  "title": "Tooling",
+  "description": "Development tools and build configuration",
+  "pages": ["index", "bun", "turborepo", "vite", "ultracite"]
+}

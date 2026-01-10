@@ -1,0 +1,5 @@
+{
+  "title": "AI Integrations",
+  "description": "AI-first development tooling and integrations",
+  "pages": ["index", "mcp-servers", "claude-code", "cursor", "git-submodules"]
+}

@@ -1,0 +1,269 @@
+---
+title: Packages
+description: Shared packages architecture and usage patterns
+---
+
+# Packages
+
+The `packages/` directory contains shared libraries used across applications. These packages encapsulate reusable code and enforce consistent patterns.
+
+## Overview
+
+| Package          | Purpose                      | Exports                         |
+| ---------------- | ---------------------------- | ------------------------------- |
+| `@packages/core` | Business logic and utilities | `seo`, `User`, `getDisplayName` |
+| `@packages/ui`   | React component library      | 14+ components                  |
+| `@packages/api`  | API client utilities         | (placeholder)                   |
+
+## Core Package (`packages/core/`)
+
+Shared business logic and utility functions.
+
+### Structure
+
+```
+packages/core/
+├── src/
+│   ├── seo.ts           # SEO meta tag generation
+│   └── user.ts          # User types and utilities
+├── package.json
+└── tsconfig.json
+```
+
+### Exports
+
+**SEO Utilities**
+
+```typescript title="packages/core/src/seo.ts"
+export function seo(options: {
+  title: string;
+  description?: string;
+  keywords?: string[];
+}) {
+  return [
+    { title: options.title },
+    { name: "description", content: options.description },
+    { name: "keywords", content: options.keywords?.join(", ") },
+    // ... Open Graph and Twitter tags
+  ];
+}
+```
+
+**User Types**
+
+```typescript title="packages/core/src/user.ts"
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export function getDisplayName(user: User): string {
+  return user.name || user.email;
+}
+```
+
+### Usage
+
+```typescript
+import { seo } from "@packages/core/seo";
+import { getDisplayName, type User } from "@packages/core/user";
+
+const meta = seo({ title: "My Page", description: "Page description" });
+const user: User = { id: "1", name: "John", email: "john@example.com" };
+console.log(getDisplayName(user)); // "John"
+```
+
+## UI Package (`packages/ui/`)
+
+React component library with Tailwind CSS styling.
+
+### Structure
+
+```
+packages/ui/
+├── src/
+│   ├── button.tsx       # Button component
+│   ├── input.tsx        # Input component
+│   ├── textarea.tsx     # Textarea component
+│   ├── card.tsx         # Card component
+│   ├── badge.tsx        # Badge component
+│   ├── separator.tsx    # Separator component
+│   ├── dropdown-menu.tsx
+│   ├── alert-dialog.tsx
+│   ├── combobox.tsx
+│   ├── select.tsx
+│   ├── field.tsx
+│   ├── label.tsx
+│   ├── input-group.tsx
+│   └── styles/
+│       └── *.css
+├── package.json
+└── tsconfig.json
+```
+
+### Component Architecture
+
+Components use:
+
+- **Base UI** - Headless components for accessibility
+- **Tailwind CSS** - Utility-first styling
+- **CVA (Class Variance Authority)** - Variant management
+
+```typescript title="packages/ui/src/button.tsx"
+import { cva, type VariantProps } from "class-variance-authority";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md font-medium",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        outline: "border border-input bg-background",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {}
+
+export function Button({ className, variant, size, ...props }: ButtonProps) {
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+}
+```
+
+### Usage
+
+```typescript
+import { Button } from "@packages/ui/button";
+import { Card } from "@packages/ui/card";
+import { Input } from "@packages/ui/input";
+
+function MyComponent() {
+  return (
+    <Card>
+      <Input placeholder="Enter text" />
+      <Button variant="outline" size="sm">
+        Submit
+      </Button>
+    </Card>
+  );
+}
+```
+
+## API Package (`packages/api/`)
+
+Placeholder for API client utilities.
+
+### Intended Use Cases
+
+- API client configuration
+- Request/response types
+- Authentication helpers
+- API constants and endpoints
+
+### Current State
+
+The package is a minimal placeholder:
+
+```typescript title="packages/api/src/index.ts"
+export {};
+```
+
+## Package Configuration
+
+### package.json Exports
+
+Packages use conditional exports for live types:
+
+```json title="packages/core/package.json"
+{
+  "name": "@packages/core",
+  "exports": {
+    "./*": {
+      "@packages/source": "./src/*.ts",
+      "types": "./dist/src/*.d.ts",
+      "default": "./dist/src/*.js"
+    }
+  }
+}
+```
+
+The `@packages/source` condition enables importing TypeScript source directly during development.
+
+### TypeScript Configuration
+
+```json title="packages/core/tsconfig.json"
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "."
+  }
+}
+```
+
+## Best Practices
+
+### 1. Single Responsibility
+
+Each package should have a clear, focused purpose:
+
+- `core` - Business logic
+- `ui` - Visual components
+- `api` - Network layer
+
+### 2. Explicit Exports
+
+Export only what consumers need:
+
+```typescript
+// Good: Explicit exports
+export { Button } from "./button";
+export type { ButtonProps } from "./button";
+
+// Avoid: Re-exporting everything
+export * from "./button";
+```
+
+### 3. No Side Effects
+
+Packages should be side-effect free for optimal tree-shaking.
+
+### 4. Type-First Development
+
+Define types first, then implement:
+
+```typescript
+// Define the interface
+interface User {
+  id: string;
+  name: string;
+}
+
+// Then implement
+function createUser(name: string): User {
+  return { id: crypto.randomUUID(), name };
+}
+```
+
+## Adding a New Package
+
+See the [Adding a Package](/docs/guides/adding-a-package) guide for step-by-step instructions.

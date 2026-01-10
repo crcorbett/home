@@ -1,0 +1,253 @@
+---
+title: Ultracite
+description: Fast Rust-based linting and formatting with oxlint and oxfmt
+---
+
+# Ultracite
+
+Ultracite is the linting and formatting toolchain used in this monorepo. It combines oxlint (linting) and oxfmt (formatting) for fast, consistent code style.
+
+## Why Ultracite?
+
+- **Speed** - 50-100x faster than ESLint/Prettier
+- **Rust-based** - Native performance, no Node.js overhead
+- **Zero Config** - Sensible defaults out of the box
+- **Unified** - Single tool for linting and formatting
+
+## Commands
+
+```bash
+# Check for lint and format issues
+bun run check
+
+# Auto-fix issues
+bun run fix
+```
+
+These run at the workspace root and process all files.
+
+## Configuration
+
+### Linting (oxlint)
+
+```json title=".oxlintrc.json"
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["ultracite/core", "ultracite/react"]
+}
+```
+
+Ultracite provides preset configurations:
+
+- `ultracite/core` - Core JavaScript/TypeScript rules
+- `ultracite/react` - React-specific rules
+
+### Formatting (oxfmt)
+
+```jsonc title=".oxfmtrc.jsonc"
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "trailingComma": "es5",
+  "experimentalSortImports": true,
+  "ignorePatterns": ["routeTree.gen.ts"]
+}
+```
+
+## Rules
+
+### Enabled by Default
+
+The presets enable common rules:
+
+- **No unused variables** - Dead code detection
+- **No console** - Prevent accidental console.log
+- **React hooks rules** - Hooks dependency checking
+- **Import order** - Consistent import organization
+
+### Ignoring Files
+
+Patterns in `.oxfmtrc.jsonc`:
+
+```jsonc
+{
+  "ignorePatterns": [
+    "routeTree.gen.ts",  // Generated file
+    "dist/**",           // Build output
+    "*.min.js"           // Minified files
+  ]
+}
+```
+
+### Disabling Rules
+
+Inline disable:
+
+```typescript
+// oxlint-ignore-next-line
+console.log("Debug");
+```
+
+Project-wide disable in `.oxlintrc.json`:
+
+```json
+{
+  "rules": {
+    "no-console": "off"
+  }
+}
+```
+
+## IDE Integration
+
+### VS Code
+
+Install the oxc extension:
+
+1. Open Extensions (Cmd+Shift+X)
+2. Search "oxc"
+3. Install "Oxc (oxlint)" extension
+
+Configure format on save:
+
+```json title=".vscode/settings.json"
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode"
+}
+```
+
+### Cursor
+
+The same VS Code extension works in Cursor.
+
+## AI Hook Integration
+
+Ultracite runs automatically via AI hooks:
+
+### Claude Code
+
+```json title=".claude/settings.json"
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": ["turbo fix"]
+      }
+    ]
+  }
+}
+```
+
+After every file edit, `turbo fix` runs to format and lint.
+
+### Cursor
+
+```json title=".cursor/hooks.json"
+{
+  "afterFileEdit": ["turbo fix"],
+  "stop": ["turbo check-types"]
+}
+```
+
+## CI Integration
+
+Add to your CI workflow:
+
+```yaml title=".github/workflows/ci.yml"
+- name: Lint
+  run: bun run check
+```
+
+This fails the build if there are any lint or format issues.
+
+## Common Patterns
+
+### Sorting Imports
+
+With `experimentalSortImports: true`, imports are automatically sorted:
+
+```typescript
+// Before
+import { useState } from "react";
+import { Button } from "@packages/ui/button";
+import z from "zod";
+
+// After
+import { useState } from "react";
+import z from "zod";
+
+import { Button } from "@packages/ui/button";
+```
+
+### Print Width
+
+The 80-character line width is enforced:
+
+```typescript
+// Too long - will be wrapped
+const result = someFunction(argument1, argument2, argument3, argument4);
+
+// Formatted
+const result = someFunction(
+  argument1,
+  argument2,
+  argument3,
+  argument4
+);
+```
+
+### Trailing Commas
+
+ES5-compatible trailing commas are added:
+
+```typescript
+const config = {
+  name: "example",
+  value: 42,  // Trailing comma
+};
+```
+
+## Troubleshooting
+
+### Fix Not Working
+
+1. Check file isn't in `ignorePatterns`
+2. Verify oxfmt is installed: `bunx oxfmt --version`
+3. Try running directly: `bunx oxfmt --write src/`
+
+### Conflicting with Prettier
+
+Remove Prettier configuration files:
+
+- `.prettierrc`
+- `.prettierignore`
+- `prettier.config.js`
+
+Uninstall Prettier VS Code extension.
+
+### Rule Errors
+
+If a rule is too strict:
+
+```json title=".oxlintrc.json"
+{
+  "rules": {
+    "problematic-rule": "warn"  // or "off"
+  }
+}
+```
+
+## Performance
+
+Ultracite is fast because it's written in Rust:
+
+| Tool   | Lint Time (1000 files) |
+| ------ | ---------------------- |
+| ESLint | ~30 seconds            |
+| oxlint | ~0.3 seconds           |
+
+This makes it practical to run on every save.

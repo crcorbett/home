@@ -1,0 +1,105 @@
+---
+title: Commands
+description: All available CLI commands
+---
+
+# Commands
+
+Quick reference for all CLI commands.
+
+## Development
+
+| Command               | Description                        |
+| --------------------- | ---------------------------------- |
+| `bun run dev`         | Start all apps in development mode |
+| `bun run build`       | Build all packages and apps        |
+| `bun run check-types` | Type check all packages            |
+| `bun run check`       | Lint and format check              |
+| `bun run fix`         | Auto-fix lint and format issues    |
+
+## Changesets
+
+| Command                     | Description                        |
+| --------------------------- | ---------------------------------- |
+| `bun run changeset`         | Create a new changeset             |
+| `bun run changeset:version` | Apply changesets and bump versions |
+| `bun run changeset:publish` | Publish packages (if public)       |
+| `bunx changeset status`     | Check pending changesets           |
+
+## Turborepo
+
+| Command                                   | Description                |
+| ----------------------------------------- | -------------------------- |
+| `bun turbo build`                         | Build all packages         |
+| `bun turbo build --filter=web`            | Build specific app         |
+| `bun turbo build --filter=web...`         | Build app and dependencies |
+| `bun turbo build --filter="./packages/*"` | Build all packages         |
+| `bun turbo dev --filter=web`              | Dev mode for specific app  |
+
+## Package Management
+
+| Command                | Description                       |
+| ---------------------- | --------------------------------- |
+| `bun install`          | Install all dependencies          |
+| `bun add <package>`    | Add dependency to current package |
+| `bun add -d <package>` | Add dev dependency                |
+| `bun remove <package>` | Remove dependency                 |
+| `bun update`           | Update all dependencies           |
+| `bun outdated`         | Check for outdated packages       |
+
+## Git
+
+| Command                         | Description                 |
+| ------------------------------- | --------------------------- |
+| `git submodule update --init`   | Initialize submodules       |
+| `git submodule update --remote` | Update submodules to latest |
+
+## Per-App Commands
+
+Run from within an app directory:
+
+```bash
+cd apps/web
+```
+
+| Command               | Description             |
+| --------------------- | ----------------------- |
+| `bun run dev`         | Start dev server        |
+| `bun run build`       | Build the app           |
+| `bun run start`       | Start production server |
+| `bun run check-types` | Type check              |
+
+## Per-Package Commands
+
+Run from within a package directory:
+
+```bash
+cd packages/core
+```
+
+| Command               | Description                 |
+| --------------------- | --------------------------- |
+| `bun run build`       | Compile TypeScript          |
+| `bun run check-types` | Type check without emitting |
+
+## Debugging
+
+| Command                       | Description               |
+| ----------------------------- | ------------------------- |
+| `bun --version`               | Check Bun version         |
+| `bunx tsc --version`          | Check TypeScript version  |
+| `bun turbo --version`         | Check Turborepo version   |
+| `bun turbo run build --dry`   | Preview what would run    |
+| `bun turbo run build --graph` | Generate dependency graph |
+
+## CI Commands
+
+These run in GitHub Actions:
+
+```bash
+# Full CI pipeline
+bun install
+bun run check-types
+bun run check
+bun run build
+```

@@ -1,0 +1,235 @@
+---
+title: Troubleshooting
+description: Common issues and solutions
+---
+
+# Troubleshooting
+
+Solutions for common issues.
+
+## Installation Issues
+
+### "bun: command not found"
+
+Install Bun:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+### Dependencies Not Installing
+
+```bash
+# Clear cache and reinstall
+rm -rf node_modules bun.lock
+bun install
+```
+
+### Wrong Bun Version
+
+Check version:
+
+```bash
+bun --version
+```
+
+Update Bun:
+
+```bash
+bun upgrade
+```
+
+## TypeScript Issues
+
+### Types Not Updating
+
+1. Restart TypeScript server (VS Code: `Cmd+Shift+P` → "TypeScript: Restart TS Server")
+2. Check `vite.config.ts` has `conditions: ["@packages/source"]`
+3. Verify package exports have `@packages/source` first
+
+### "Cannot find module"
+
+1. Run `bun install`
+2. Check the import path matches package exports
+3. Verify `moduleResolution: "Bundler"` in tsconfig
+
+### Slow TypeScript
+
+1. Ensure `skipLibCheck: true` in tsconfig
+2. Check `exclude` includes `dist/` and `node_modules/`
+3. Close unused VS Code windows
+
+## Build Issues
+
+### Build Fails
+
+```bash
+# Check for type errors
+bun run check-types
+
+# Check for lint errors
+bun run check
+
+# Clean and rebuild
+rm -rf apps/*/dist packages/*/dist
+bun run build
+```
+
+### "dist not found"
+
+Packages need to be built:
+
+```bash
+bun run build
+```
+
+### Vite Build Errors
+
+1. Check for browser-only code in SSR paths
+2. Verify imports don't use Node.js APIs in client code
+3. Check for circular dependencies
+
+## Development Server Issues
+
+### Port Already in Use
+
+Find and kill the process:
+
+```bash
+lsof -i :3000
+kill -9 <PID>
+```
+
+Or use a different port:
+
+```bash
+cd apps/web && bun run dev -- --port 3003
+```
+
+### Hot Reload Not Working
+
+1. Check file is saved
+2. Verify no syntax errors
+3. Restart dev server
+
+### Nitro HTTP/2 Bug
+
+Nitro is disabled in dev due to Bun compatibility. This is expected behavior.
+
+## Linting Issues
+
+### "oxlint: command not found"
+
+Install dependencies:
+
+```bash
+bun install
+```
+
+### Format Not Applied
+
+Run fix command:
+
+```bash
+bun run fix
+```
+
+### Conflicting with Prettier
+
+Remove Prettier:
+
+1. Delete `.prettierrc`, `.prettierignore`
+2. Uninstall Prettier VS Code extension
+3. Use oxfmt instead
+
+## Git Issues
+
+### Submodules Empty
+
+Initialize submodules:
+
+```bash
+git submodule update --init --recursive
+```
+
+### Submodules Out of Date
+
+```bash
+git submodule update --remote
+```
+
+## CI Issues
+
+### CI Failing but Local Works
+
+1. Check Bun versions match
+2. Run full CI locally:
+   ```bash
+   bun install
+   bun run check-types
+   bun run check
+   bun run build
+   ```
+3. Check for environment-specific code
+
+### Turborepo Cache Not Working
+
+1. Verify `TURBO_TOKEN` secret is set
+2. Check `TURBO_TEAM` variable
+3. View cache status: `bun turbo build --dry`
+
+## Deployment Issues
+
+### Vercel Build Fails
+
+1. Check build logs in Vercel dashboard
+2. Verify build command: `cd ../.. && bun run build --filter=<app>`
+3. Check environment variables are set
+
+### SSR Errors
+
+1. Check for `window` or `document` usage in server code
+2. Wrap browser-only code: `if (typeof window !== 'undefined')`
+3. Check Vercel Functions logs
+
+### Missing Environment Variables
+
+1. Add to Vercel project settings
+2. Set correct scope (Production/Preview/Development)
+3. Redeploy after adding
+
+## Package Issues
+
+### Phantom Dependencies
+
+Add missing dependencies to `package.json`:
+
+```bash
+cd packages/ui
+bun add @types/react -d
+```
+
+### Circular Dependencies
+
+1. Check import graph with: `bun turbo build --graph`
+2. Extract shared code to a new package
+3. Use dependency injection
+
+### Package Not Found in App
+
+1. Add workspace dependency:
+   ```json
+   "@packages/my-package": "workspace:*"
+   ```
+2. Run `bun install`
+3. Check package name matches `package.json`
+
+## Getting Help
+
+1. Check the [Guides](/docs/guides) section
+2. Search existing GitHub issues
+3. Create a new issue with:
+   - Error message
+   - Steps to reproduce
+   - Bun/Node versions
+   - OS and architecture

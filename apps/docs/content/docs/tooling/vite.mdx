@@ -1,0 +1,274 @@
+---
+title: Vite
+description: Build tool configuration and plugins
+---
+
+# Vite
+
+Vite is the build tool powering all applications in this monorepo. It provides fast development builds and optimized production bundles.
+
+## Why Vite?
+
+- **Instant Server Start** - No bundling during development
+- **Fast HMR** - Sub-millisecond hot module replacement
+- **Optimized Builds** - Rollup-based production bundling
+- **Rich Plugin Ecosystem** - TanStack, Tailwind, and more
+
+## Configuration
+
+Each app has its own `vite.config.ts`:
+
+```typescript title="apps/web/vite.config.ts"
+import { defineConfig } from "vite";
+import { tanstackStart } from "@tanstack/react-start/vite";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  plugins: [tanstackStart(), tailwindcss()],
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+  server: {
+    port: 3000,
+  },
+});
+```
+
+## Key Configuration
+
+### Live Types Condition
+
+```typescript
+resolve: {
+  conditions: ["@packages/source"],
+}
+```
+
+This tells Vite to prefer source files when resolving workspace packages, enabling live types during development.
+
+### TanStack Start Plugin
+
+```typescript
+plugins: [tanstackStart()]
+```
+
+Enables:
+
+- File-based routing
+- Server-side rendering
+- Server functions
+
+### Tailwind CSS Plugin
+
+```typescript
+plugins: [tailwindcss()]
+```
+
+Processes Tailwind CSS with Vite's build pipeline.
+
+## App-Specific Configurations
+
+### Web App
+
+```typescript title="apps/web/vite.config.ts"
+export default defineConfig({
+  plugins: [tanstackStart(), tailwindcss()],
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+  server: {
+    port: 3000,
+    https: true, // Local HTTPS via mkcert
+  },
+});
+```
+
+### Docs App
+
+```typescript title="apps/docs/vite.config.ts"
+import { fumadocsMDX } from "fumadocs-mdx/vite";
+
+export default defineConfig({
+  plugins: [fumadocsMDX(), tanstackStart(), tailwindcss()],
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+});
+```
+
+The docs app includes the Fumadocs MDX plugin for processing documentation.
+
+## Build Output
+
+### Development
+
+No build output - Vite serves files directly with on-demand transformation.
+
+### Production
+
+```bash
+bun run build
+```
+
+Output goes to:
+
+- `.output/` - Nitro server bundle
+- `.vercel/output/` - Vercel deployment format
+
+## Environment Variables
+
+### Loading Environment Variables
+
+Vite loads from `.env` files:
+
+```
+.env                # All environments
+.env.local          # Local overrides (gitignored)
+.env.development    # Development only
+.env.production     # Production only
+```
+
+### Exposing to Client
+
+Prefix with `VITE_` to expose to client code:
+
+```bash
+# .env
+VITE_API_URL=https://api.example.com
+API_SECRET=secret  # Server only
+```
+
+```typescript
+// Client code
+console.log(import.meta.env.VITE_API_URL);
+```
+
+## Development Server
+
+### Starting
+
+```bash
+# Start with Turborepo
+bun run dev
+
+# Or directly
+cd apps/web && bun run dev
+```
+
+### Hot Module Replacement
+
+Vite's HMR updates modules without full page reload:
+
+1. Save a file
+2. Vite detects the change
+3. Only affected modules are updated
+4. React state is preserved
+
+### HTTPS
+
+Local HTTPS is configured via mkcert:
+
+```typescript
+server: {
+  https: true,
+}
+```
+
+First time setup may require installing certificates.
+
+## Production Build
+
+### Building
+
+```bash
+bun run build
+```
+
+Vite:
+
+1. Bundles JavaScript with Rollup
+2. Optimizes CSS
+3. Generates static assets
+4. Creates server bundle (via Nitro)
+
+### Analyzing Bundle
+
+Add the visualizer plugin:
+
+```typescript
+import { visualizer } from "rollup-plugin-visualizer";
+
+export default defineConfig({
+  plugins: [
+    // ... other plugins
+    visualizer({ open: true }),
+  ],
+});
+```
+
+Run build to see the bundle analysis.
+
+## Common Patterns
+
+### Path Aliases
+
+Configure in `vite.config.ts`:
+
+```typescript
+resolve: {
+  alias: {
+    "@": path.resolve(__dirname, "./src"),
+  },
+},
+```
+
+And `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### Static Assets
+
+Place in `public/` directory:
+
+```
+apps/web/
+├── public/
+│   ├── favicon.ico
+│   └── images/
+│       └── logo.png
+└── src/
+```
+
+Reference in code:
+
+```tsx
+<img src="/images/logo.png" alt="Logo" />
+```
+
+## Troubleshooting
+
+### HMR Not Working
+
+1. Check for syntax errors in the file
+2. Verify the file is imported somewhere
+3. Try full page refresh
+
+### Build Fails
+
+1. Check for TypeScript errors: `bun run check-types`
+2. Verify all imports resolve
+3. Check environment variables are set
+
+### Slow Builds
+
+1. Enable `skipLibCheck` in tsconfig
+2. Check for large dependencies
+3. Consider code splitting

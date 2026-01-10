@@ -1,0 +1,89 @@
+---
+title: Tooling
+description: Development tools and build configuration
+---
+
+# Tooling
+
+This monorepo uses modern, high-performance development tools designed for speed and developer experience.
+
+## Tool Stack
+
+| Tool          | Purpose                   | Why We Chose It                         |
+| ------------- | ------------------------- | --------------------------------------- |
+| **Bun**       | Runtime & package manager | Fast, native TypeScript support         |
+| **Turborepo** | Build orchestration       | Intelligent caching, parallel execution |
+| **Vite**      | Build tool                | Fast HMR, modern bundling               |
+| **Ultracite** | Linting & formatting      | Rust-based speed                        |
+
+## Quick Commands
+
+```bash
+# Install dependencies
+bun install
+
+# Start development
+bun run dev
+
+# Type check
+bun run check-types
+
+# Lint and format
+bun run check  # Check for issues
+bun run fix    # Auto-fix issues
+
+# Build all packages
+bun run build
+```
+
+## Topics
+
+- **[Bun](/docs/tooling/bun)** - Package manager and runtime
+- **[Turborepo](/docs/tooling/turborepo)** - Task orchestration and caching
+- **[Vite](/docs/tooling/vite)** - Build tool configuration
+- **[Ultracite](/docs/tooling/ultracite)** - Linting and formatting
+
+## How It All Works Together
+
+```
+bun run dev
+    │
+    ▼
+Turborepo (turbo.json)
+    │
+    ├─► apps/web    ─► Vite dev server (port 3000)
+    ├─► apps/admin  ─► Vite dev server (port 3001)
+    └─► apps/docs   ─► Vite dev server (port 3001)
+```
+
+1. **Bun** handles package installation and script execution
+2. **Turborepo** orchestrates tasks across packages
+3. **Vite** bundles and serves each application
+4. **Ultracite** runs on file save (via hooks) to format and lint
+
+## Performance Tips
+
+### Use Turborepo Cache
+
+Turborepo caches build outputs. Avoid deleting `.turbo/` unless necessary.
+
+### Parallel Development
+
+Open multiple terminals for focused work:
+
+```bash
+# Terminal 1: Web app only
+cd apps/web && bun run dev
+
+# Terminal 2: Type checking
+bun run check-types --watch
+```
+
+### Skip Unchanged Packages
+
+Turborepo only rebuilds changed packages:
+
+```bash
+# Only rebuild what changed
+bun turbo build
+```

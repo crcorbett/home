@@ -1,0 +1,5 @@
+{
+  "title": "Architecture",
+  "description": "Understanding the monorepo architecture and design decisions",
+  "pages": ["index", "monorepo-design", "apps", "packages", "dependencies"]
+}

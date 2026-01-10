@@ -1,0 +1,242 @@
+---
+title: Configuration
+description: Configuration files reference
+---
+
+# Configuration
+
+Reference for all configuration files in the monorepo.
+
+## Root Configuration
+
+### package.json
+
+```json
+{
+  "name": "template",
+  "type": "module",
+  "packageManager": "bun@1.3.5",
+  "workspaces": ["apps/*", "packages/*"],
+  "catalog": {
+    "react": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}
+```
+
+| Field            | Purpose                    |
+| ---------------- | -------------------------- |
+| `type`           | ES modules                 |
+| `packageManager` | Bun version                |
+| `workspaces`     | Monorepo packages          |
+| `catalog`        | Shared dependency versions |
+
+### tsconfig.base.json
+
+Base TypeScript configuration extended by all packages.
+
+Key settings:
+
+- `target`: ES2022
+- `module`: ESNext
+- `moduleResolution`: Bundler
+- `strict`: true
+- `customConditions`: ["@packages/source"]
+
+### turbo.json
+
+```json
+{
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".output/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    }
+  }
+}
+```
+
+### .oxlintrc.json
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["ultracite/core", "ultracite/react"]
+}
+```
+
+### .oxfmtrc.jsonc
+
+```jsonc
+{
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "trailingComma": "es5",
+  "experimentalSortImports": true
+}
+```
+
+## Package Configuration
+
+### package.json (packages)
+
+```json
+{
+  "name": "@packages/core",
+  "type": "module",
+  "exports": {
+    "./*": {
+      "import": {
+        "@packages/source": "./src/*.ts",
+        "types": "./dist/src/*.d.ts",
+        "default": "./dist/src/*.js"
+      }
+    }
+  }
+}
+```
+
+### tsconfig.json (packages)
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["./src/**/*.ts"]
+}
+```
+
+## App Configuration
+
+### package.json (apps)
+
+```json
+{
+  "name": "web",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check-types": "tsc --noEmit"
+  }
+}
+```
+
+### tsconfig.json (apps)
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false
+  }
+}
+```
+
+### vite.config.ts
+
+```typescript
+export default defineConfig({
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+  plugins: [
+    tailwindcss(),
+    tsConfigPaths(),
+    tanstackStart(),
+  ],
+});
+```
+
+## AI Configuration
+
+### .mcp.json
+
+```json
+{
+  "mcpServers": {
+    "playwriter": {
+      "command": "npx playwriter@latest"
+    },
+    "deepwiki": {
+      "type": "http",
+      "url": "https://mcp.deepwiki.com/mcp"
+    }
+  }
+}
+```
+
+### .claude/settings.json
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": ["turbo fix"]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": ["turbo check-types"]
+      }
+    ]
+  }
+}
+```
+
+## CI Configuration
+
+### .github/workflows/ci.yml
+
+Key environment:
+
+- `ubuntu-latest` runner
+- Bun 1.3.5
+- Steps: install, check-types, check, build
+
+### .changeset/config.json
+
+```json
+{
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}
+```
+
+## Environment Variables
+
+### Required
+
+None required for local development.
+
+### Optional
+
+| Variable      | Purpose      |
+| ------------- | ------------ |
+| `TURBO_TOKEN` | Remote cache |
+| `TURBO_TEAM`  | Team slug    |
+
+### App-Specific
+
+Prefix with `VITE_` for client-side access:
+
+```bash
+VITE_API_URL=https://api.example.com
+```

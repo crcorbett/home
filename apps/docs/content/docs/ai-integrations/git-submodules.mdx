@@ -1,0 +1,221 @@
+---
+title: Git Submodules
+description: AI context via git submodules for library source code
+---
+
+# Git Submodules
+
+The `.context/` directory contains git submodules that provide source code context for AI assistants.
+
+## Purpose
+
+AI assistants work better when they can:
+
+1. **Read library source code** - Understand internals, not just docs
+2. **See implementation details** - Generate more accurate code
+3. **Find undocumented features** - Discover patterns from source
+
+Git submodules provide this context without bloating the main repository.
+
+## Current Submodules
+
+```
+.context/
+├── tanstack-router/    # TanStack Router source
+├── fumadocs/           # Fumadocs source
+└── changesets.md       # Changesets documentation
+```
+
+### TanStack Router
+
+Full source code of TanStack Router:
+
+```
+.context/tanstack-router/
+├── packages/
+│   ├── router-core/
+│   ├── react-router/
+│   └── start/
+└── ...
+```
+
+**Use Cases:**
+
+- Understanding route configuration
+- Debugging routing issues
+- Finding advanced patterns
+
+### Fumadocs
+
+Full source code of Fumadocs:
+
+```
+.context/fumadocs/
+├── packages/
+│   ├── core/
+│   ├── mdx/
+│   └── ui/
+└── ...
+```
+
+**Use Cases:**
+
+- Customizing documentation features
+- Understanding MDX processing
+- Extending the docs app
+
+### Changesets
+
+Documentation on Changesets workflow:
+
+```
+.context/changesets.md
+```
+
+**Use Cases:**
+
+- Understanding versioning process
+- Creating changesets correctly
+- Troubleshooting releases
+
+## Setup
+
+### Initial Clone
+
+When cloning the repository, include submodules:
+
+```bash
+git clone --recursive https://github.com/your-org/template.git
+```
+
+### Initialize After Clone
+
+If you cloned without `--recursive`:
+
+```bash
+git submodule update --init --recursive
+```
+
+### Update Submodules
+
+Pull latest changes:
+
+```bash
+git submodule update --remote
+```
+
+## Adding a Submodule
+
+To add a new context submodule:
+
+```bash
+# Add the submodule
+git submodule add https://github.com/org/repo.git .context/repo-name
+
+# Commit the addition
+git add .gitmodules .context/repo-name
+git commit -m "chore: add repo-name context submodule"
+```
+
+## Configuration
+
+Submodules are configured in `.gitmodules`:
+
+```ini title=".gitmodules"
+[submodule ".context/tanstack-router"]
+    path = .context/tanstack-router
+    url = https://github.com/TanStack/router.git
+
+[submodule ".context/fumadocs"]
+    path = .context/fumadocs
+    url = https://github.com/fuma-nama/fumadocs.git
+```
+
+## How AI Uses Context
+
+### During Development
+
+When you ask an AI assistant about TanStack Router:
+
+1. AI can read `.context/tanstack-router/` source
+2. Finds actual implementation, not just docs
+3. Generates more accurate code
+
+### Example Queries
+
+**Without context:**
+
+> "How do I configure TanStack Router loaders?"
+
+AI might give generic or outdated advice.
+
+**With context:**
+
+> "How do I configure TanStack Router loaders?"
+
+AI can read the actual loader implementation in `.context/tanstack-router/` and give accurate, current information.
+
+## Best Practices
+
+### Keep Submodules Updated
+
+Periodically update to get latest changes:
+
+```bash
+git submodule update --remote
+```
+
+### Add Relevant Libraries
+
+Add submodules for libraries you:
+
+- Use heavily in your project
+- Need to understand deeply
+- Want AI to know about
+
+### Avoid Large Submodules
+
+Submodules increase clone time. Only add what's useful.
+
+## Troubleshooting
+
+### Submodule Not Initialized
+
+```bash
+# Check status
+git submodule status
+
+# Initialize missing submodules
+git submodule update --init --recursive
+```
+
+### Submodule Out of Date
+
+```bash
+# Update all submodules
+git submodule update --remote
+
+# Or update specific submodule
+cd .context/tanstack-router
+git pull origin main
+```
+
+### Permission Errors
+
+If you can't clone a submodule:
+
+1. Check you have access to the repository
+2. Verify the URL in `.gitmodules` is correct
+3. Try HTTPS instead of SSH (or vice versa)
+
+### Detached HEAD
+
+Submodules are normally in detached HEAD state. This is expected. The parent repository tracks a specific commit.
+
+To update to latest:
+
+```bash
+git submodule update --remote
+git add .context/submodule-name
+git commit -m "chore: update submodule to latest"
+```

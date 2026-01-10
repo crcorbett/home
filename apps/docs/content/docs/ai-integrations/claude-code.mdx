@@ -1,0 +1,234 @@
+---
+title: Claude Code
+description: Claude Code integration with hooks and settings
+---
+
+# Claude Code
+
+Claude Code is Anthropic's CLI for AI-assisted development. This monorepo includes configuration for automated workflows.
+
+## Configuration
+
+Claude Code settings are in `.claude/settings.json`:
+
+```json title=".claude/settings.json"
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": ["turbo fix"]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": ["turbo check-types"]
+      }
+    ]
+  }
+}
+```
+
+## Hooks
+
+### PostToolUse
+
+Runs after Claude uses a tool:
+
+```json
+{
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write",
+      "hooks": ["turbo fix"]
+    }
+  ]
+}
+```
+
+**Behavior:**
+
+- Triggers after `Edit` or `Write` tool use
+- Runs `turbo fix` to format and lint
+- Ensures consistent code style
+
+### Stop
+
+Runs when Claude finishes a task:
+
+```json
+{
+  "Stop": [
+    {
+      "hooks": ["turbo check-types"]
+    }
+  ]
+}
+```
+
+**Behavior:**
+
+- Triggers when Claude completes work
+- Runs type checking across all packages
+- Catches type errors before commit
+
+## Hook Matchers
+
+The `matcher` field supports regex patterns:
+
+| Pattern       | Matches              |
+| ------------- | -------------------- |
+| `Edit`        | Edit tool            |
+| `Write`       | Write tool           |
+| `Edit\|Write` | Either Edit or Write |
+| `.*`          | Any tool             |
+
+Without a matcher, hooks run on every tool use.
+
+## Commands Directory
+
+Custom commands are in `.claude/commands/`:
+
+```
+.claude/
+├── settings.json
+└── commands/
+    ├── commit.md      # Commit workflow
+    ├── new-prd.md     # PRD creation
+    └── pr-body.md     # PR description
+```
+
+These symlink to `.config/commands/` for sharing with Cursor.
+
+### Using Commands
+
+Invoke with `/command-name`:
+
+```
+/commit          # Create a commit
+/new-prd         # Create a new PRD
+/pr-body         # Generate PR description
+```
+
+## Best Practices
+
+### Keep Hooks Fast
+
+Hooks run synchronously. Keep them quick:
+
+```json
+// Good: Fast operations
+"hooks": ["turbo fix"]
+
+// Avoid: Slow operations
+"hooks": ["bun run full-test-suite"]
+```
+
+### Use Targeted Hooks
+
+Only run hooks when needed:
+
+```json
+{
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write",  // Only file operations
+      "hooks": ["turbo fix"]
+    }
+  ]
+}
+```
+
+### Chain Related Commands
+
+For workflows, create command files:
+
+```markdown title=".claude/commands/release.md"
+# Release Workflow
+
+1. Run tests
+2. Update version
+3. Generate changelog
+4. Create commit
+```
+
+## Configuration Inheritance
+
+Claude Code looks for settings in:
+
+1. `.claude/settings.json` (project)
+2. `~/.claude/settings.json` (user)
+3. Default settings
+
+Project settings override user settings.
+
+## MCP Integration
+
+Claude Code uses the `.mcp.json` configuration:
+
+```json title=".mcp.json"
+{
+  "mcpServers": {
+    "playwriter": { "command": "npx playwriter@latest" }
+  }
+}
+```
+
+MCP servers are automatically available in Claude Code sessions.
+
+## Debugging
+
+### View Hook Output
+
+Hook output appears in the Claude Code terminal.
+
+### Disable Hooks Temporarily
+
+Remove or comment out hooks in `settings.json` for debugging.
+
+### Check Hook Errors
+
+If hooks fail, Claude Code shows the error. Fix the underlying command.
+
+## Tips
+
+### Format on Every Edit
+
+The PostToolUse hook ensures code is always formatted:
+
+```json
+{
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write",
+      "hooks": ["turbo fix"]
+    }
+  ]
+}
+```
+
+### Catch Errors Early
+
+The Stop hook catches issues before you review:
+
+```json
+{
+  "Stop": [
+    {
+      "hooks": ["turbo check-types"]
+    }
+  ]
+}
+```
+
+### Custom Workflows
+
+Create command files for complex workflows:
+
+```markdown title=".claude/commands/setup-feature.md"
+# Setup Feature Branch
+
+1. Create branch from main
+2. Update dependencies
+3. Create placeholder tests
+```

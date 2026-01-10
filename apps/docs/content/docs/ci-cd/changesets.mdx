@@ -1,0 +1,249 @@
+---
+title: Changesets
+description: Version management and changelog generation
+---
+
+# Changesets
+
+Changesets provides automated version management and changelog generation for this monorepo.
+
+## Overview
+
+Changesets tracks changes across packages and automates:
+
+- Version bumping
+- Changelog generation
+- Git tagging
+- npm publishing (if packages are public)
+
+## Workflow
+
+### 1. Make Changes
+
+Develop your feature or fix as normal.
+
+### 2. Create a Changeset
+
+When your changes are ready:
+
+```bash
+bun run changeset
+```
+
+This interactive CLI asks:
+
+1. Which packages changed?
+2. What type of change? (major/minor/patch)
+3. Summary of the change
+
+A markdown file is created in `.changeset/`:
+
+```markdown title=".changeset/happy-dogs-run.md"
+---
+"@packages/ui": minor
+---
+
+Added new Button variant for destructive actions
+```
+
+### 3. Commit the Changeset
+
+```bash
+git add .changeset/
+git commit -m "chore: add changeset"
+```
+
+### 4. Open a PR
+
+Push your branch and open a pull request. The changeset is included.
+
+### 5. CI Creates Version PR
+
+When changesets merge to `main`, the release workflow:
+
+1. Detects pending changesets
+2. Creates/updates a "Version Packages" PR
+3. This PR contains version bumps and changelogs
+
+### 6. Merge to Release
+
+Merging the version PR:
+
+1. Updates all package versions
+2. Generates changelogs
+3. Tags the release
+4. Publishes (if configured)
+
+## Configuration
+
+```json title=".changeset/config.json"
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}
+```
+
+### Key Settings
+
+| Setting                      | Value        | Purpose                    |
+| ---------------------------- | ------------ | -------------------------- |
+| `access`                     | `restricted` | Packages are private       |
+| `updateInternalDependencies` | `patch`      | Auto-bump dependents       |
+| `privatePackages.version`    | `true`       | Version private packages   |
+| `privatePackages.tag`        | `false`      | Custom tagging (see below) |
+
+## Version Types
+
+### Patch (0.0.X)
+
+Bug fixes and minor changes:
+
+```markdown
+---
+"@packages/core": patch
+---
+
+Fixed edge case in seo() function
+```
+
+### Minor (0.X.0)
+
+New features, backwards compatible:
+
+```markdown
+---
+"@packages/ui": minor
+---
+
+Added Tooltip component
+```
+
+### Major (X.0.0)
+
+Breaking changes:
+
+```markdown
+---
+"@packages/core": major
+---
+
+BREAKING: Changed seo() function signature
+```
+
+## App Tagging
+
+Apps are tagged with a custom format: `app-name@version`
+
+The release workflow handles this:
+
+```yaml
+- name: Tag apps
+  run: |
+    for app in web admin docs; do
+      if git diff HEAD~1 --name-only | grep -q "apps/$app/CHANGELOG.md"; then
+        version=$(jq -r .version apps/$app/package.json)
+        git tag "$app@$version"
+        git push origin "$app@$version"
+      fi
+    done
+```
+
+This creates tags like:
+
+- `web@1.2.0`
+- `admin@1.2.0`
+- `docs@1.2.0`
+
+## Commands
+
+```bash
+# Create a new changeset
+bun run changeset
+
+# Apply changesets and update versions
+bun run changeset:version
+
+# Publish packages (if public)
+bun run changeset:publish
+
+# Check changeset status
+bunx changeset status
+```
+
+## Best Practices
+
+### One Changeset Per Feature
+
+Create a single changeset that covers all related changes:
+
+```markdown
+---
+"@packages/core": minor
+"@packages/ui": patch
+---
+
+Added user preferences feature with supporting UI components
+```
+
+### Write Good Summaries
+
+Summaries appear in changelogs. Be clear and concise:
+
+**Bad:**
+
+```markdown
+fixed stuff
+```
+
+**Good:**
+
+```markdown
+Fixed race condition in data fetching that caused stale UI
+```
+
+### Skip Changesets for Internal Changes
+
+Not all changes need changesets:
+
+- Documentation updates
+- CI configuration
+- Dev tooling changes
+
+## Troubleshooting
+
+### "No changesets found"
+
+If CI says no changesets but you expected one:
+
+1. Check `.changeset/` directory
+2. Ensure the file has proper frontmatter
+3. Verify package names match `package.json`
+
+### Version PR Not Updating
+
+The version PR updates on each push to main. If stuck:
+
+1. Check the release workflow logs
+2. Ensure `GITHUB_TOKEN` has write permissions
+3. Try closing and reopening the PR
+
+### Changeset Not Detecting Package
+
+Package must be in the workspace:
+
+```json title="package.json"
+{
+  "workspaces": ["apps/*", "packages/*"]
+}
+```

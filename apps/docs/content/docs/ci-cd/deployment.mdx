@@ -1,0 +1,217 @@
+---
+title: Deployment
+description: Deploying apps to Vercel
+---
+
+# Deployment
+
+Apps are deployed to Vercel with automatic preview and production deployments.
+
+## Vercel Configuration
+
+Each app has a `vercel.json` (or uses defaults):
+
+```json title="apps/web/vercel.json"
+{
+  "buildCommand": "cd ../.. && bun run build --filter=web",
+  "outputDirectory": ".output",
+  "framework": null,
+  "installCommand": "cd ../.. && bun install"
+}
+```
+
+### Key Settings
+
+| Setting           | Value             | Purpose        |
+| ----------------- | ----------------- | -------------- |
+| `buildCommand`    | Build from root   | Uses Turborepo |
+| `outputDirectory` | `.output`         | Nitro output   |
+| `installCommand`  | Install from root | Workspace deps |
+
+## Project Setup
+
+### 1. Import Project
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import from GitHub
+3. Select the repository
+
+### 2. Configure Root Directory
+
+For monorepo apps, set the root directory:
+
+- **Web app**: `apps/web`
+- **Admin app**: `apps/admin`
+- **Docs app**: `apps/docs`
+
+### 3. Build Settings
+
+Override build settings:
+
+- **Build Command**: `cd ../.. && bun run build --filter=<app-name>`
+- **Install Command**: `cd ../.. && bun install`
+- **Output Directory**: `.output`
+
+### 4. Environment Variables
+
+Set required environment variables:
+
+- `NODE_ENV`: `production`
+- Any app-specific variables
+
+## Build Process
+
+When Vercel builds:
+
+1. Clones the full monorepo
+2. Runs `bun install` from root
+3. Runs `turbo build --filter=<app>`
+4. Deploys the `.output` directory
+
+Turborepo ensures:
+
+- Dependencies are built first
+- Build caching is utilized
+- Only necessary packages are built
+
+## Preview Deployments
+
+Every PR gets a preview deployment:
+
+1. Push to a branch
+2. Open a PR
+3. Vercel comment appears with preview URL
+
+Preview URLs format:
+
+```
+https://my-project-git-branch-name-org.vercel.app
+```
+
+## Production Deployments
+
+Merging to `main` triggers production:
+
+1. Merge PR to `main`
+2. Vercel builds production
+3. Deploys to production URL
+
+## Nitro Server
+
+TanStack Start uses Nitro for SSR. The Vercel preset is configured:
+
+```typescript title="apps/web/vite.config.ts"
+import nitroVercelPreset from "nitropack-preset-vercel";
+
+export default defineConfig({
+  plugins: [
+    TanStackStartVite({
+      server: {
+        preset: nitroVercelPreset(),
+      },
+    }),
+  ],
+});
+```
+
+## Multiple Apps
+
+### Separate Projects
+
+Create a Vercel project for each app:
+
+- `my-org-web` → `apps/web`
+- `my-org-admin` → `apps/admin`
+- `my-org-docs` → `apps/docs`
+
+### Linking Projects
+
+Use Vercel CLI to link:
+
+```bash
+cd apps/web
+bunx vercel link
+```
+
+## Environment Variables
+
+### Setting Variables
+
+Via Vercel dashboard:
+
+1. Project Settings
+2. Environment Variables
+3. Add variable with scope (Production/Preview/Development)
+
+Via CLI:
+
+```bash
+bunx vercel env add MY_VAR
+```
+
+### Accessing Variables
+
+In your app:
+
+```typescript
+const apiKey = process.env.API_KEY;
+```
+
+## Caching
+
+### Turborepo Remote Cache
+
+Enable for faster builds:
+
+1. Get a Vercel token
+2. Set in Vercel project:
+   - `TURBO_TOKEN`: Your token
+   - `TURBO_TEAM`: Your team slug
+
+Builds reuse cached artifacts from previous runs.
+
+## Custom Domains
+
+### Adding a Domain
+
+1. Project Settings → Domains
+2. Add your domain
+3. Configure DNS as shown
+
+### Subdomains for Apps
+
+```
+www.example.com     → web app
+admin.example.com   → admin app
+docs.example.com    → docs app
+```
+
+## Troubleshooting
+
+### Build Fails
+
+Check the build logs:
+
+1. Go to Deployments
+2. Click the failed deployment
+3. View build logs
+
+Common issues:
+
+- Missing environment variables
+- Type errors (run `bun run check-types` locally)
+- Dependency issues
+
+### Preview Not Updating
+
+1. Check if the commit triggered a build
+2. Verify the branch is correct
+3. Check Vercel project settings
+
+### SSR Issues
+
+If SSR fails but static works:
+
+1. Check server-side code for browser APIs
+2. Verify environment variables are set
+3. Check Nitro logs in Vercel Functions

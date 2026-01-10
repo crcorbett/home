@@ -1,0 +1,5 @@
+{
+  "title": "Reference",
+  "description": "Commands, configuration, and troubleshooting",
+  "pages": ["index", "commands", "configuration", "troubleshooting"]
+}

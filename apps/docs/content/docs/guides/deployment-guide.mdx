@@ -1,0 +1,190 @@
+---
+title: Deployment Guide
+description: Step-by-step guide to deploying your apps
+---
+
+# Deployment Guide
+
+This guide walks through deploying your monorepo apps to production.
+
+## Prerequisites
+
+- GitHub repository with your code
+- Vercel account (free tier works)
+- Apps building successfully locally
+
+## Step 1: Verify Local Build
+
+Before deploying, ensure everything builds:
+
+```bash
+# Type check all packages
+bun run check-types
+
+# Lint all code
+bun run check
+
+# Build everything
+bun run build
+```
+
+Fix any errors before proceeding.
+
+## Step 2: Push to GitHub
+
+```bash
+git add .
+git commit -m "feat: ready for deployment"
+git push origin main
+```
+
+## Step 3: Import to Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Click "Import Git Repository"
+3. Select your GitHub repository
+4. Choose the app to deploy
+
+## Step 4: Configure Build Settings
+
+For each app, configure:
+
+### Root Directory
+
+Set to the app folder:
+
+- Web: `apps/web`
+- Admin: `apps/admin`
+- Docs: `apps/docs`
+
+### Build Command
+
+```bash
+cd ../.. && bun run build --filter=<app-name>
+```
+
+Replace `<app-name>` with `web`, `admin`, or `docs`.
+
+### Install Command
+
+```bash
+cd ../.. && bun install
+```
+
+### Output Directory
+
+```
+.output
+```
+
+## Step 5: Environment Variables
+
+Add any required environment variables:
+
+1. Go to Project Settings → Environment Variables
+2. Add each variable
+3. Set scope (Production, Preview, Development)
+
+Common variables:
+
+- `NODE_ENV`: `production`
+- API keys for external services
+- Feature flags
+
+## Step 6: Deploy
+
+Click "Deploy" and wait for the build to complete.
+
+## Step 7: Configure Domain
+
+1. Go to Project Settings → Domains
+2. Add your custom domain
+3. Configure DNS as instructed
+
+### Recommended Setup
+
+```
+www.example.com     → web app
+admin.example.com   → admin app
+docs.example.com    → docs app
+```
+
+## Step 8: Enable Preview Deployments
+
+Preview deployments are enabled by default. Each PR gets a unique URL.
+
+## Step 9: Set Up CI Integration
+
+The repository already includes CI workflows. To enable Turborepo remote caching:
+
+1. Go to [vercel.com/account/tokens](https://vercel.com/account/tokens)
+2. Create a new token
+3. Add to GitHub Secrets as `TURBO_TOKEN`
+4. Add `TURBO_TEAM` as a variable (your Vercel team slug)
+
+## Deploying Multiple Apps
+
+Repeat steps 3-6 for each app:
+
+1. Create a new Vercel project for each app
+2. Point each to the same repository
+3. Set different root directories
+
+## Monitoring
+
+### Build Logs
+
+View in Vercel dashboard:
+
+1. Go to Deployments
+2. Click a deployment
+3. View build logs
+
+### Runtime Logs
+
+For SSR/API issues:
+
+1. Go to Project → Functions
+2. View function logs
+
+### Analytics
+
+Enable Vercel Analytics:
+
+1. Go to Project → Analytics
+2. Enable Web Analytics
+3. Add tracking to your app
+
+## Rollback
+
+If a deployment has issues:
+
+1. Go to Deployments
+2. Find the last working deployment
+3. Click "..." → "Promote to Production"
+
+## Troubleshooting
+
+### Build Fails
+
+1. Check build logs for errors
+2. Run `bun run build` locally
+3. Verify all dependencies are installed
+
+### Environment Variables Missing
+
+1. Check variable names match exactly
+2. Verify scope includes Production
+3. Redeploy after adding variables
+
+### SSR Not Working
+
+1. Check for browser-only code in server paths
+2. Verify Nitro configuration
+3. Check function logs
+
+### Slow Builds
+
+1. Enable Turborepo remote caching
+2. Check if cache is being hit
+3. Review build output for issues

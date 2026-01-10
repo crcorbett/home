@@ -1,0 +1,239 @@
+---
+title: GitHub Actions
+description: CI workflow configuration and customization
+---
+
+# GitHub Actions
+
+The main CI workflow runs on every push to `main` and on pull requests.
+
+## Workflow Configuration
+
+```yaml title=".github/workflows/ci.yml"
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.5"
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Type check
+        run: bun run check-types
+
+      - name: Lint
+        run: bun run check
+
+      - name: Build
+        run: bun run build
+```
+
+## Jobs Explained
+
+### Checkout
+
+```yaml
+- uses: actions/checkout@v4
+```
+
+Clones the repository with default settings.
+
+### Bun Setup
+
+```yaml
+- uses: oven-sh/setup-bun@v2
+  with:
+    bun-version: "1.3.5"
+```
+
+Installs the specified Bun version. Keep this in sync with `package.json`:
+
+```json
+{
+  "packageManager": "bun@1.3.5"
+}
+```
+
+### Type Checking
+
+```yaml
+- name: Type check
+  run: bun run check-types
+```
+
+Runs TypeScript type checking via Turborepo:
+
+```bash
+turbo check-types
+```
+
+This checks all packages in dependency order.
+
+### Linting
+
+```yaml
+- name: Lint
+  run: bun run check
+```
+
+Runs Ultracite (oxlint + oxfmt) to check:
+
+- Code style
+- Formatting
+- Common errors
+
+### Building
+
+```yaml
+- name: Build
+  run: bun run build
+```
+
+Builds all packages and apps via Turborepo with caching.
+
+## Caching
+
+### Turborepo Remote Cache
+
+Enable remote caching for faster CI:
+
+```yaml
+- name: Build
+  run: bun run build
+  env:
+    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+```
+
+Set up at [vercel.com/teams](https://vercel.com/teams).
+
+### Bun Cache
+
+Cache Bun's global cache:
+
+```yaml
+- uses: oven-sh/setup-bun@v2
+  with:
+    bun-version: "1.3.5"
+
+- name: Cache Bun dependencies
+  uses: actions/cache@v4
+  with:
+    path: ~/.bun/install/cache
+    key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+    restore-keys: |
+      ${{ runner.os }}-bun-
+```
+
+## Customization
+
+### Adding Steps
+
+Add custom steps after the standard checks:
+
+```yaml
+- name: Build
+  run: bun run build
+
+- name: Run tests
+  run: bun run test
+
+- name: E2E tests
+  run: bun run e2e
+```
+
+### Matrix Builds
+
+Test across multiple Node versions:
+
+```yaml
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        bun-version: ["1.3.5", "latest"]
+    steps:
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+```
+
+### Conditional Steps
+
+Run steps only on certain conditions:
+
+```yaml
+- name: Deploy preview
+  if: github.event_name == 'pull_request'
+  run: bun run deploy:preview
+
+- name: Deploy production
+  if: github.ref == 'refs/heads/main'
+  run: bun run deploy:prod
+```
+
+## Secrets
+
+Required secrets for enhanced functionality:
+
+| Secret         | Purpose             | Required   |
+| -------------- | ------------------- | ---------- |
+| `TURBO_TOKEN`  | Remote cache access | Optional   |
+| `VERCEL_TOKEN` | Vercel deployment   | For deploy |
+
+Set secrets in: Settings → Secrets and variables → Actions
+
+## Debugging
+
+### View Logs
+
+1. Go to Actions tab
+2. Click the workflow run
+3. Expand job steps
+
+### Run Locally
+
+Use `act` to run workflows locally:
+
+```bash
+brew install act
+act -j ci
+```
+
+### Common Failures
+
+**Type errors:**
+
+```bash
+# Run locally to see errors
+bun run check-types
+```
+
+**Lint errors:**
+
+```bash
+# Auto-fix
+bun run fix
+```
+
+**Build errors:**
+
+```bash
+# Clean and rebuild
+rm -rf node_modules/.cache
+bun run build
+```

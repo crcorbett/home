@@ -1,0 +1,190 @@
+---
+title: Apps
+description: Application architecture and configuration
+---
+
+# Apps
+
+The `apps/` directory contains all deployable applications. Each app is a self-contained package with its own dependencies and configuration.
+
+## Overview
+
+| App     | Purpose                   | Port | Framework                 |
+| ------- | ------------------------- | ---- | ------------------------- |
+| `web`   | Main consumer application | 3000 | TanStack Start            |
+| `admin` | Internal admin dashboard  | 3001 | TanStack Start            |
+| `docs`  | Documentation site        | 3001 | TanStack Start + Fumadocs |
+
+## Web App (`apps/web/`)
+
+The main consumer-facing application.
+
+### Structure
+
+```
+apps/web/
+├── src/
+│   ├── routes/           # File-based routing
+│   │   ├── __root.tsx    # Root layout
+│   │   ├── index.tsx     # Home page
+│   │   └── about.tsx     # Example page
+│   ├── components/       # React components
+│   └── utils/            # Utility functions
+├── public/               # Static assets
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Vite Configuration
+
+```typescript title="apps/web/vite.config.ts"
+export default defineConfig({
+  plugins: [tanstackStart(), tailwindcss()],
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+  server: {
+    port: 3000,
+  },
+});
+```
+
+Key features:
+
+- **TanStack Start plugin** - SSR and file-based routing
+- **Tailwind CSS** - Styling via Vite plugin
+- **`@packages/source` condition** - Enables live types from packages
+
+### File-Based Routing
+
+TanStack Router uses file-based routing. The route tree is generated from the `src/routes/` directory:
+
+```typescript title="src/routes/index.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/")({
+  component: Home,
+});
+
+function Home() {
+  return <h1>Welcome</h1>;
+}
+```
+
+### Route Generation
+
+Routes are auto-generated into `routeTree.gen.ts`. Never edit this file manually.
+
+## Admin App (`apps/admin/`)
+
+Internal admin dashboard with the same architecture as the web app.
+
+### Differences from Web
+
+- Runs on port 3001
+- Intended for authenticated admin users
+- Can have different layouts and components
+
+### Configuration
+
+The configuration mirrors the web app:
+
+```typescript title="apps/admin/vite.config.ts"
+export default defineConfig({
+  plugins: [tanstackStart(), tailwindcss()],
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+  server: {
+    port: 3001,
+  },
+});
+```
+
+## Docs App (`apps/docs/`)
+
+This documentation site, built with Fumadocs.
+
+### Structure
+
+```
+apps/docs/
+├── content/
+│   └── docs/             # MDX documentation files
+│       ├── index.mdx
+│       └── ...
+├── src/
+│   ├── routes/
+│   │   ├── __root.tsx
+│   │   ├── index.tsx     # Redirects to /docs
+│   │   ├── docs/
+│   │   │   └── $.tsx     # Catch-all docs route
+│   │   └── api/
+│   │       └── search.ts # Search API
+│   └── lib/
+│       ├── layout.shared.tsx
+│       └── source.ts
+├── source.config.ts      # Fumadocs configuration
+└── vite.config.ts
+```
+
+### Fumadocs Integration
+
+The docs app uses Fumadocs for MDX processing:
+
+```typescript title="source.config.ts"
+import { defineDocs } from "fumadocs-mdx/config";
+
+export const { docs, meta } = defineDocs({
+  dir: "content/docs",
+});
+```
+
+### Vite Configuration
+
+```typescript title="apps/docs/vite.config.ts"
+export default defineConfig({
+  plugins: [fumadocsMDX(), tanstackStart(), tailwindcss()],
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+});
+```
+
+Note: The docs app includes the `fumadocsMDX()` plugin for MDX processing.
+
+## Shared Patterns
+
+### Package Imports
+
+All apps use the same pattern for importing from shared packages:
+
+```typescript
+import { seo } from "@packages/core/seo";
+import { Button } from "@packages/ui/button";
+```
+
+### TypeScript Configuration
+
+Each app extends the base TypeScript configuration:
+
+```json title="apps/web/tsconfig.json"
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "$/*": ["./src/*"],
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### Build Output
+
+Apps build to `.output/` (for Nitro/SSR) or `dist/` directories. Turborepo caches these outputs for faster rebuilds.
+
+## Adding a New App
+
+See the [Adding an App](/docs/guides/adding-an-app) guide for step-by-step instructions.

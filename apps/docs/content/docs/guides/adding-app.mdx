@@ -1,0 +1,240 @@
+---
+title: Adding an App
+description: Add a new application to the monorepo
+---
+
+# Adding an App
+
+This guide walks through adding a new TanStack Start application.
+
+## 1. Create from Template
+
+The easiest approach is to copy an existing app:
+
+```bash
+cp -r apps/web apps/my-app
+```
+
+## 2. Update package.json
+
+```json title="apps/my-app/package.json"
+{
+  "name": "my-app",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3002",
+    "build": "vite build",
+    "start": "node .output/server/index.mjs",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@packages/core": "workspace:*",
+    "@packages/ui": "workspace:*",
+    "@tanstack/react-router": "catalog:",
+    "@tanstack/react-start": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/router-devtools": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}
+```
+
+Note the unique port `3002`.
+
+## 3. Update tsconfig.json
+
+```json title="apps/my-app/tsconfig.json"
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "baseUrl": ".",
+    "paths": {
+      "$/*": ["./src/*"]
+    }
+  }
+}
+```
+
+## 4. Update vite.config.ts
+
+```typescript title="apps/my-app/vite.config.ts"
+import { tanstackStart } from "@tanstack/react-start/vite";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+import tsConfigPaths from "vite-tsconfig-paths";
+
+export default defineConfig({
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+  plugins: [
+    tailwindcss(),
+    tsConfigPaths({
+      projects: ["./tsconfig.json"],
+    }),
+    tanstackStart({
+      server: {
+        // Nitro disabled in dev due to HTTP/2 bug with Bun
+        dev: false,
+      },
+    }),
+  ],
+});
+```
+
+## 5. Clean Up Routes
+
+Clear the example routes:
+
+```bash
+rm -rf apps/my-app/src/routes/*
+```
+
+Create a new root layout:
+
+```typescript title="apps/my-app/src/routes/__root.tsx"
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+
+export const Route = createRootRoute({
+  component: RootLayout,
+});
+
+function RootLayout() {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My App</title>
+      </head>
+      <body>
+        <Outlet />
+      </body>
+    </html>
+  );
+}
+```
+
+Create index page:
+
+```typescript title="apps/my-app/src/routes/index.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/")({
+  component: Home,
+});
+
+function Home() {
+  return <h1>Welcome to My App</h1>;
+}
+```
+
+## 6. Add to Root tsconfig.json
+
+```json title="tsconfig.json"
+{
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./apps/admin" },
+    { "path": "./apps/docs" },
+    { "path": "./apps/my-app" },  // Add this
+    { "path": "./packages/core" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/api" }
+  ]
+}
+```
+
+## 7. Install and Run
+
+```bash
+# Install dependencies
+bun install
+
+# Run all apps
+bun run dev
+
+# Or run just your app
+cd apps/my-app && bun run dev
+```
+
+Visit http://localhost:3002.
+
+## 8. Configure Deployment
+
+Create Vercel configuration:
+
+```json title="apps/my-app/vercel.json"
+{
+  "buildCommand": "cd ../.. && bun run build --filter=my-app",
+  "outputDirectory": ".output",
+  "framework": null,
+  "installCommand": "cd ../.. && bun install"
+}
+```
+
+## Verification
+
+```bash
+# Type check
+bun run check-types
+
+# Build
+bun run build
+
+# Test the build
+cd apps/my-app && bun run start
+```
+
+## Tips
+
+### Sharing Code
+
+Import from shared packages:
+
+```typescript
+import { seo } from "@packages/core/seo";
+import { Button } from "@packages/ui/button";
+```
+
+### App-Specific Packages
+
+For app-specific utilities, create in `src/`:
+
+```typescript title="apps/my-app/src/utils/helpers.ts"
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString();
+}
+```
+
+Import with path alias:
+
+```typescript
+import { formatDate } from "$/utils/helpers";
+```
+
+### Environment Variables
+
+Create `.env` files:
+
+```bash title="apps/my-app/.env"
+VITE_API_URL=https://api.example.com
+```
+
+Access in code:
+
+```typescript
+const apiUrl = import.meta.env.VITE_API_URL;
+```

@@ -1,0 +1,5 @@
+{
+  "title": "Getting Started",
+  "description": "Get up and running with the monorepo template",
+  "pages": ["index", "installation", "project-structure", "first-steps"]
+}

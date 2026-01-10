@@ -1,0 +1,106 @@
+---
+title: AI Integrations
+description: AI-first development tooling and integrations
+---
+
+# AI Integrations
+
+This monorepo is designed with AI-assisted development in mind. It includes configurations for multiple AI coding assistants and tools.
+
+## Why AI-First?
+
+AI coding assistants are most effective when they have:
+
+1. **Context** - Access to relevant source code and documentation
+2. **Tooling** - Integration with development workflows
+3. **Consistency** - Automated formatting and type checking
+
+This template provides all three out of the box.
+
+## What's Included
+
+| Component             | Purpose                                |
+| --------------------- | -------------------------------------- |
+| **MCP Servers**       | Model Context Protocol for tool access |
+| **Claude Code Hooks** | Automated workflows for Claude Code    |
+| **Cursor Hooks**      | IDE integration for Cursor             |
+| **Git Submodules**    | Source code context for AI assistants  |
+
+## Quick Overview
+
+### MCP Servers (`.mcp.json`)
+
+```json
+{
+  "mcpServers": {
+    "playwriter": { "command": "npx playwriter@latest" },
+    "deepwiki": { "url": "https://mcp.deepwiki.com/mcp" },
+    "linear": { "url": "https://mcp.linear.app/mcp" }
+  }
+}
+```
+
+Provides AI assistants with:
+
+- Browser automation (Playwriter)
+- Repository documentation (DeepWiki)
+- Issue tracking (Linear)
+
+### Claude Code Hooks
+
+```json title=".claude/settings.json"
+{
+  "hooks": {
+    "PostToolUse": ["turbo fix"],
+    "Stop": ["turbo check-types"]
+  }
+}
+```
+
+Automatically format code and check types during AI sessions.
+
+### Context Submodules
+
+```
+.context/
+├── tanstack-router/   # TanStack Router source
+├── fumadocs/          # Fumadocs source
+└── changesets.md      # Changesets documentation
+```
+
+Git submodules providing source code context for AI assistants.
+
+## Topics
+
+- **[MCP Servers](/docs/ai-integrations/mcp-servers)** - Model Context Protocol configuration
+- **[Claude Code](/docs/ai-integrations/claude-code)** - Claude Code integration and hooks
+- **[Cursor](/docs/ai-integrations/cursor)** - Cursor IDE configuration
+- **[Git Submodules](/docs/ai-integrations/git-submodules)** - AI context via submodules
+
+## Benefits
+
+### Live Types + AI
+
+The [live types](/docs/typescript/live-types) pattern ensures AI assistants see current type information:
+
+```typescript
+import { seo } from "@packages/core/seo";
+// AI sees actual implementation, not stale .d.ts files
+```
+
+### Automated Quality
+
+Hooks ensure code quality even when AI writes code:
+
+1. AI makes changes
+2. `turbo fix` formats the code
+3. `turbo check-types` catches type errors
+4. Human reviews clean, correct code
+
+### Deep Context
+
+With git submodules, AI assistants can:
+
+- Understand library internals
+- Generate more accurate code
+- Answer questions about dependencies

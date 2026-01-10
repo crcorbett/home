@@ -1,0 +1,256 @@
+---
+title: Strict Mode
+description: Why we enable all TypeScript strict settings
+---
+
+# Strict Mode
+
+This monorepo enables all TypeScript strict settings. This document explains why and what each setting catches.
+
+## Why Strict Mode?
+
+Strict TypeScript settings catch more bugs at compile time. The short-term cost of satisfying these rules pays off in fewer runtime errors.
+
+## Enabled Settings
+
+### Core Strict Settings
+
+These are enabled by `"strict": true`:
+
+| Setting                        | What It Catches                         |
+| ------------------------------ | --------------------------------------- |
+| `strictNullChecks`             | Null/undefined reference errors         |
+| `strictFunctionTypes`          | Incorrect function parameter types      |
+| `strictBindCallApply`          | Incorrect `bind`, `call`, `apply` usage |
+| `strictPropertyInitialization` | Uninitialized class properties          |
+| `noImplicitAny`                | Missing type annotations                |
+| `noImplicitThis`               | Ambiguous `this` context                |
+| `alwaysStrict`                 | Emits `"use strict"`                    |
+
+### Additional Strict Settings
+
+We also enable these:
+
+```json
+{
+  "noUncheckedIndexedAccess": true,
+  "exactOptionalPropertyTypes": true,
+  "useUnknownInCatchVariables": true,
+  "noImplicitReturns": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noPropertyAccessFromIndexSignature": true,
+  "noUnusedLocals": true,
+  "noUnusedParameters": true
+}
+```
+
+## What Each Setting Catches
+
+### `noUncheckedIndexedAccess`
+
+Array and object index access can return `undefined`:
+
+```typescript
+const arr = [1, 2, 3];
+const item = arr[5]; // Type: number | undefined
+
+// Must check before using
+if (item !== undefined) {
+  console.log(item * 2);
+}
+```
+
+### `exactOptionalPropertyTypes`
+
+Distinguishes between `undefined` and missing properties:
+
+```typescript
+interface Config {
+  name?: string;
+}
+
+// Error: can't assign undefined explicitly
+const config: Config = { name: undefined };
+
+// OK: omit the property entirely
+const config2: Config = {};
+```
+
+### `useUnknownInCatchVariables`
+
+Catch variables are `unknown`, not `any`:
+
+```typescript
+try {
+  riskyOperation();
+} catch (error) {
+  // error is 'unknown', must narrow
+  if (error instanceof Error) {
+    console.log(error.message);
+  }
+}
+```
+
+### `noImplicitReturns`
+
+Functions must return in all code paths:
+
+```typescript
+// Error: not all paths return
+function getValue(flag: boolean): string {
+  if (flag) {
+    return "yes";
+  }
+  // Missing return!
+}
+
+// Fixed
+function getValue(flag: boolean): string {
+  if (flag) {
+    return "yes";
+  }
+  return "no";
+}
+```
+
+### `noFallthroughCasesInSwitch`
+
+Switch cases must break or return:
+
+```typescript
+// Error: fallthrough
+switch (value) {
+  case 1:
+    doSomething();
+  case 2: // Falls through!
+    doSomethingElse();
+}
+
+// Fixed
+switch (value) {
+  case 1:
+    doSomething();
+    break;
+  case 2:
+    doSomethingElse();
+    break;
+}
+```
+
+### `noImplicitOverride`
+
+Subclass methods must use `override` keyword:
+
+```typescript
+class Base {
+  greet() {
+    console.log("Hello");
+  }
+}
+
+class Derived extends Base {
+  // Error: must use 'override'
+  greet() {
+    console.log("Hi");
+  }
+}
+
+// Fixed
+class DerivedFixed extends Base {
+  override greet() {
+    console.log("Hi");
+  }
+}
+```
+
+### `noPropertyAccessFromIndexSignature`
+
+Must use bracket notation for index signatures:
+
+```typescript
+interface Dict {
+  [key: string]: string;
+}
+
+const dict: Dict = { foo: "bar" };
+
+// Error: use bracket notation
+console.log(dict.foo);
+
+// OK
+console.log(dict["foo"]);
+```
+
+### `noUnusedLocals` / `noUnusedParameters`
+
+Catches dead code:
+
+```typescript
+// Error: 'unused' is declared but never used
+function example(unused: string) {
+  const dead = "value"; // Error: never used
+  return "result";
+}
+
+// Use underscore prefix to indicate intentionally unused
+function fixed(_intentionallyUnused: string) {
+  return "result";
+}
+```
+
+## Common Patterns
+
+### Type Narrowing
+
+Use type guards to narrow types:
+
+```typescript
+function process(value: string | null) {
+  if (value === null) {
+    return;
+  }
+  // value is now 'string'
+  console.log(value.toUpperCase());
+}
+```
+
+### Non-Null Assertion
+
+When you know a value exists, use `!`:
+
+```typescript
+const element = document.getElementById("app")!;
+// Use sparingly - prefer type guards
+```
+
+### Definite Assignment
+
+For properties initialized outside the constructor:
+
+```typescript
+class Component {
+  private element!: HTMLElement; // Will be assigned
+
+  init() {
+    this.element = document.createElement("div");
+  }
+}
+```
+
+## Trade-offs
+
+### Benefits
+
+- Catches bugs at compile time
+- Self-documenting code
+- Better IDE support
+- Safer refactoring
+
+### Costs
+
+- More verbose code
+- Steeper learning curve
+- Some false positives
+
+The benefits far outweigh the costs for production codebases.

@@ -1,0 +1,175 @@
+---
+title: Live Types
+description: The @packages/source pattern for instant TypeScript feedback
+---
+
+# Live Types
+
+Live types eliminate the need to rebuild packages when making changes. This document explains how the pattern works and why it matters.
+
+## The Problem: Dead Types
+
+In a traditional TypeScript monorepo, when you import from a workspace package:
+
+```typescript
+import { seo } from "@packages/core/seo";
+```
+
+TypeScript resolves this to compiled declaration files:
+
+```
+@packages/core/dist/src/seo.d.ts
+```
+
+This creates friction:
+
+1. **Build step required** - You must run `tsc` in each package before types are visible
+2. **Stale types** - If you change `seo.ts` but forget to rebuild, your editor shows outdated types
+3. **Slow iteration** - Every change requires a rebuild to propagate type information
+4. **AI agent friction** - Code assistants struggle when types don't reflect actual source code
+
+## The Solution: Custom Export Conditions
+
+We use Node.js conditional exports with a custom condition `@packages/source` to resolve directly to TypeScript source files during development.
+
+### How It Works
+
+**1. Package exports define a custom condition:**
+
+```json title="packages/core/package.json"
+{
+  "exports": {
+    "./*": {
+      "import": {
+        "@packages/source": "./src/*.ts",
+        "types": "./dist/src/*.d.ts",
+        "default": "./dist/src/*.js"
+      }
+    }
+  }
+}
+```
+
+**2. TypeScript recognizes this condition:**
+
+```json title="tsconfig.base.json"
+{
+  "compilerOptions": {
+    "customConditions": ["@packages/source"]
+  }
+}
+```
+
+**3. Vite resolves using the same condition:**
+
+```typescript title="apps/web/vite.config.ts"
+export default defineConfig({
+  resolve: {
+    conditions: ["@packages/source"],
+  },
+});
+```
+
+### Resolution Flow
+
+When TypeScript or Vite resolves `@packages/core/seo`:
+
+1. It finds the `@packages/source` condition
+2. Resolves directly to `./src/seo.ts`
+3. Types are always current - no build step needed
+
+## Condition Order Matters
+
+The `@packages/source` condition **must come first** in exports:
+
+```json
+{
+  "@packages/source": "./src/*.ts",  // First!
+  "types": "./dist/src/*.d.ts",
+  "default": "./dist/src/*.js"
+}
+```
+
+Node.js and TypeScript evaluate conditions in order. Placing the custom condition first ensures it's used when present, with fallbacks for production.
+
+## Why This Condition Name?
+
+The condition name should be:
+
+1. **Unique** - Won't collide with third-party packages
+2. **Scoped** - Only applies to our workspace packages
+3. **Descriptive** - Clear intent
+
+`@packages/source` meets all criteria. Using something generic like `"source"` might accidentally resolve third-party packages to their source files.
+
+## Working with AI Agents
+
+Live types are particularly valuable with AI coding assistants:
+
+### The AI Sees What You See
+
+With live types, when an AI agent reads:
+
+```typescript
+import { seo } from "@packages/core/seo";
+```
+
+It resolves directly to `packages/core/src/seo.ts`, seeing:
+
+- Actual implementation
+- JSDoc comments
+- Full type definitions in context
+
+Without live types, the AI might see stale or incomplete type information from cached `.d.ts` files.
+
+### Faster Iteration Cycles
+
+When an AI suggests changes to a shared package:
+
+1. AI modifies `packages/core/src/seo.ts`
+2. Type errors/updates propagate instantly to `apps/web`
+3. No rebuild step required
+
+This tight feedback loop is crucial for effective AI-assisted development.
+
+## Production Builds
+
+Production builds don't use the custom condition. When deploying:
+
+```bash
+bun run build
+```
+
+This runs Turborepo, which:
+
+1. Builds packages in dependency order
+2. Compiles TypeScript to `dist/` in each package
+3. Production code uses the `default` export condition
+
+## Troubleshooting
+
+### Types Not Updating
+
+**Symptom**: Changes to a package don't reflect in consuming code.
+
+**Solutions**:
+
+1. Check that the consuming app's `vite.config.ts` includes `conditions: ["@packages/source"]`
+2. Restart the TypeScript server (VS Code: `TypeScript: Restart TS Server`)
+3. Verify the package's `exports` has `@packages/source` first
+
+### Build Fails but Dev Works
+
+**Symptom**: Types resolve in development but `tsc` fails.
+
+**Solutions**:
+
+1. Run `bun run build` once to create `dist/` directories
+2. Verify `declaration` and `composite` are enabled in packages
+3. Ensure export conditions have valid `types` and `default` paths
+
+## Further Reading
+
+- [Live types in a TypeScript monorepo](https://colinhacks.com/essays/live-types-typescript-monorepo) - The essay that inspired this setup
+- [Node.js Conditional Exports](https://nodejs.org/api/packages.html#conditional-exports)
+- [TypeScript customConditions](https://www.typescriptlang.org/tsconfig#customConditions)

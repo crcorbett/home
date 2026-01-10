@@ -1,0 +1,24 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "---Getting Started---",
+    "...getting-started",
+    "---Architecture---",
+    "...architecture",
+    "---TypeScript---",
+    "...typescript",
+    "---Tooling---",
+    "...tooling",
+    "---AI Integrations---",
+    "...ai-integrations",
+    "---CI/CD---",
+    "...ci-cd",
+    "---UI Components---",
+    "...ui-components",
+    "---Guides---",
+    "...guides",
+    "---Reference---",
+    "...reference"
+  ]
+}

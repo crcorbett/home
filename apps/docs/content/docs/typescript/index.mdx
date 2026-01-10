@@ -1,0 +1,65 @@
+---
+title: TypeScript
+description: TypeScript configuration and patterns for optimal developer experience
+---
+
+# TypeScript
+
+This monorepo uses TypeScript with strict settings and the "live types" pattern for an optimal developer experience.
+
+## Key Features
+
+- **Strict Mode** - All strict TypeScript settings enabled
+- **Live Types** - Changes to packages reflect instantly without building
+- **Bundler Resolution** - Modern module resolution for Vite/bundler workflows
+- **Shared Configuration** - Single `tsconfig.base.json` for consistency
+
+## How It Works
+
+TypeScript in this monorepo is configured to resolve package imports directly to their source files during development:
+
+```typescript
+import { seo } from "@packages/core/seo";
+// Resolves to packages/core/src/seo.ts, not dist/
+```
+
+This eliminates the need to rebuild packages when making changes - types are always current.
+
+## Configuration Overview
+
+| File                       | Purpose                          |
+| -------------------------- | -------------------------------- |
+| `tsconfig.base.json`       | Shared settings for all packages |
+| `tsconfig.json`            | Root project references          |
+| `apps/*/tsconfig.json`     | App-specific overrides           |
+| `packages/*/tsconfig.json` | Package build configuration      |
+
+## Topics
+
+- **[Configuration](/docs/typescript/configuration)** - Deep dive into tsconfig settings
+- **[Live Types](/docs/typescript/live-types)** - How the custom export condition works
+- **[Strict Mode](/docs/typescript/strict-mode)** - Why we enable all strict settings
+
+## Quick Reference
+
+### Run Type Checking
+
+```bash
+# Check all packages
+bun run check-types
+
+# Check specific package
+cd packages/core && bun run check-types
+```
+
+### Common Issues
+
+**Types not updating?**
+
+1. Restart TypeScript server in your IDE
+2. Verify `@packages/source` condition is in vite.config.ts
+
+**Cannot find module?**
+
+1. Check package exports match import path
+2. Verify tsconfig extends base config

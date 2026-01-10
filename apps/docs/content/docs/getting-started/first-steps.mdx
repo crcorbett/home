@@ -1,0 +1,203 @@
+---
+title: First Steps
+description: Run the development server and make your first changes
+---
+
+# First Steps
+
+Now that you have the monorepo installed, let's explore the development workflow.
+
+## Starting Development
+
+Run the development server:
+
+```bash
+bun run dev
+```
+
+Turborepo starts all apps in parallel:
+
+- **Web**: http://localhost:3000
+- **Admin**: http://localhost:3001
+- **Docs**: http://localhost:3001
+
+## Making Your First Change
+
+Let's add a simple component to understand the workflow.
+
+### 1. Create a Component in @packages/ui
+
+Create a new component in the shared UI package:
+
+```typescript title="packages/ui/src/greeting.tsx"
+export function Greeting({ name }: { name: string }) {
+  return <h1>Hello, {name}!</h1>;
+}
+```
+
+### 2. Use It in an App
+
+Import and use the component in the web app:
+
+```typescript title="apps/web/src/routes/index.tsx"
+import { Greeting } from "@packages/ui/greeting";
+
+export default function Home() {
+  return (
+    <div>
+      <Greeting name="World" />
+    </div>
+  );
+}
+```
+
+### 3. See It Live
+
+Thanks to live types and Vite's hot module replacement, changes appear instantly in the browser.
+
+## Running Commands
+
+### Type Checking
+
+```bash
+# Check all packages
+bun run check-types
+
+# Check a specific app
+cd apps/web && bun run check-types
+```
+
+### Linting and Formatting
+
+```bash
+# Check for lint errors
+bun run check
+
+# Auto-fix lint and formatting issues
+bun run fix
+```
+
+### Building
+
+```bash
+# Build all packages
+bun run build
+
+# Build a specific app
+cd apps/web && bun run build
+```
+
+## File-Based Routing
+
+TanStack Router uses file-based routing. Create a new page by adding a file:
+
+```typescript title="apps/web/src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({
+  component: About,
+});
+
+function About() {
+  return <h1>About Us</h1>;
+}
+```
+
+The route is automatically available at `/about`.
+
+## Working with Packages
+
+### Importing from Packages
+
+Use the `@packages/` prefix to import from shared packages:
+
+```typescript
+// Business logic
+import { seo } from "@packages/core/seo";
+import { getDisplayName } from "@packages/core/user";
+
+// UI components
+import { Button } from "@packages/ui/button";
+import { Card } from "@packages/ui/card";
+```
+
+### Adding Dependencies
+
+Add dependencies to a specific package:
+
+```bash
+# Add to a package
+cd packages/ui && bun add some-package
+
+# Add to an app
+cd apps/web && bun add some-package
+```
+
+### Using Catalog Dependencies
+
+Shared dependencies are defined in the root `package.json` catalog:
+
+```json title="package.json"
+{
+  "catalog": {
+    "react": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}
+```
+
+Reference them in packages with `catalog:`:
+
+```json title="packages/ui/package.json"
+{
+  "dependencies": {
+    "react": "catalog:"
+  }
+}
+```
+
+## Development Tips
+
+### Watch Mode
+
+Turborepo's `dev` command runs in watch mode automatically. Changes to any file trigger:
+
+1. TypeScript compilation
+2. Hot module replacement
+3. Browser refresh
+
+### Parallel Development
+
+Open multiple terminals to focus on specific areas:
+
+```bash
+# Terminal 1: Web app
+cd apps/web && bun run dev
+
+# Terminal 2: Watch types
+bun run check-types --watch
+
+# Terminal 3: Docs
+cd apps/docs && bun run dev
+```
+
+### Using Turborepo Filters
+
+Run commands for specific packages:
+
+```bash
+# Only web app
+bun turbo build --filter=web
+
+# Only packages
+bun turbo build --filter="./packages/*"
+
+# Package and its dependencies
+bun turbo build --filter=web...
+```
+
+## Next Steps
+
+- **[Architecture](/docs/architecture)** - Understand the monorepo design
+- **[TypeScript](/docs/typescript)** - Learn about the TypeScript configuration
+- **[Tooling](/docs/tooling)** - Explore the development tools

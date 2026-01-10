@@ -1,0 +1,209 @@
+---
+title: MCP Servers
+description: Model Context Protocol server configuration
+---
+
+# MCP Servers
+
+MCP (Model Context Protocol) enables AI assistants to access external tools and services. This monorepo configures several MCP servers.
+
+## Configuration
+
+MCP servers are configured in `.mcp.json` at the repository root:
+
+```json title=".mcp.json"
+{
+  "mcpServers": {
+    "playwriter": {
+      "command": "npx playwriter@latest",
+      "env": {
+        "PLAYWRITER_AUTO_ENABLE": "1"
+      }
+    },
+    "deepwiki": {
+      "type": "http",
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "linear-cooper": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
+    }
+  }
+}
+```
+
+## Available Servers
+
+### Playwriter
+
+Browser automation via Playwright.
+
+```json
+{
+  "playwriter": {
+    "command": "npx playwriter@latest",
+    "env": {
+      "PLAYWRITER_AUTO_ENABLE": "1"
+    }
+  }
+}
+```
+
+**Capabilities:**
+
+- Navigate web pages
+- Take screenshots
+- Interact with page elements
+- Execute JavaScript in browser context
+
+**Use Cases:**
+
+- Testing web applications
+- Debugging UI issues
+- Automating browser tasks
+
+### DeepWiki
+
+Repository documentation and knowledge base.
+
+```json
+{
+  "deepwiki": {
+    "type": "http",
+    "url": "https://mcp.deepwiki.com/mcp"
+  }
+}
+```
+
+**Capabilities:**
+
+- Read repository documentation
+- Answer questions about libraries
+- Explore code structure
+
+**Use Cases:**
+
+- Understanding external libraries
+- Finding API documentation
+- Exploring unfamiliar codebases
+
+### Linear
+
+Issue and project management.
+
+```json
+{
+  "linear-cooper": {
+    "type": "http",
+    "url": "https://mcp.linear.app/mcp"
+  }
+}
+```
+
+**Capabilities:**
+
+- Create and update issues
+- View project status
+- Track work items
+
+**Use Cases:**
+
+- Creating issues from code
+- Linking commits to tasks
+- Project management automation
+
+## Server Types
+
+### Command Servers
+
+Started as local processes:
+
+```json
+{
+  "server-name": {
+    "command": "npx some-mcp-server@latest",
+    "env": {
+      "ENV_VAR": "value"
+    }
+  }
+}
+```
+
+### HTTP Servers
+
+Connect to remote endpoints:
+
+```json
+{
+  "server-name": {
+    "type": "http",
+    "url": "https://example.com/mcp"
+  }
+}
+```
+
+## Adding an MCP Server
+
+1. Find or create an MCP server
+2. Add configuration to `.mcp.json`
+3. Restart your AI assistant
+
+Example adding a custom server:
+
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "command": "node ./tools/my-mcp-server.js",
+      "env": {
+        "API_KEY": "${MCP_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+## Environment Variables
+
+Environment variables in `env` are passed to the server process:
+
+```json
+{
+  "env": {
+    "PLAYWRITER_AUTO_ENABLE": "1",
+    "DEBUG": "true"
+  }
+}
+```
+
+Use `${VAR_NAME}` syntax to reference shell environment variables.
+
+## Symlinks
+
+Both `.claude/mcp.json` and `.cursor/mcp.json` can symlink to the root `.mcp.json`:
+
+```bash
+ln -s ../.mcp.json .cursor/mcp.json
+```
+
+This keeps configuration centralized.
+
+## Troubleshooting
+
+### Server Not Starting
+
+1. Check the command is valid: run it manually
+2. Verify environment variables are set
+3. Check for port conflicts
+
+### Server Not Responding
+
+1. Restart your AI assistant
+2. Check server logs
+3. Verify network connectivity for HTTP servers
+
+### Permission Errors
+
+1. Ensure command is executable
+2. Check file permissions
+3. Verify environment variable access

@@ -1,0 +1,249 @@
+---
+title: Dependencies
+description: Dependency management, catalogs, and workspace references
+---
+
+# Dependencies
+
+This document explains how dependencies are managed across the monorepo.
+
+## Dependency Catalogs
+
+The root `package.json` defines a catalog of shared dependency versions:
+
+```json title="package.json"
+{
+  "catalog": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "typescript": "5.9.3",
+    "@tanstack/react-router": "1.142.7",
+    "@tanstack/react-start": "1.142.7",
+    "tailwindcss": "4.1.18",
+    "@tailwindcss/vite": "4.1.18",
+    "vite": "7.1.7",
+    "zod": "4.3.5"
+  }
+}
+```
+
+### Using Catalog Versions
+
+Reference catalog versions in package dependencies:
+
+```json title="apps/web/package.json"
+{
+  "dependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "@tanstack/react-router": "catalog:"
+  }
+}
+```
+
+The `catalog:` protocol tells Bun to use the version from the root catalog.
+
+### Benefits
+
+- **Single source of truth** - Version updates happen in one place
+- **Consistency** - All packages use the same versions
+- **Easier upgrades** - Update once, apply everywhere
+- **Prevents conflicts** - No version mismatches between packages
+
+## Workspace Dependencies
+
+Local packages are referenced using the `workspace:` protocol:
+
+```json title="apps/web/package.json"
+{
+  "dependencies": {
+    "@packages/core": "workspace:*",
+    "@packages/ui": "workspace:*"
+  }
+}
+```
+
+### How It Works
+
+1. Bun resolves `workspace:*` to the local package
+2. Changes to the package are immediately reflected
+3. No need to publish or version bump during development
+
+### Workspace Protocols
+
+| Protocol      | Behavior                                |
+| ------------- | --------------------------------------- |
+| `workspace:*` | Use any version, links to local package |
+| `workspace:^` | Compatible versions, links to local     |
+| `workspace:~` | Patch versions, links to local          |
+
+## Dev vs Production Dependencies
+
+### devDependencies
+
+Tools only needed during development:
+
+```json
+{
+  "devDependencies": {
+    "typescript": "catalog:",
+    "turbo": "latest"
+  }
+}
+```
+
+These are not bundled into production builds.
+
+### dependencies
+
+Runtime requirements:
+
+```json
+{
+  "dependencies": {
+    "react": "catalog:",
+    "@packages/core": "workspace:*"
+  }
+}
+```
+
+These are included in production bundles.
+
+## Hoisting and Resolution
+
+### How Bun Resolves Dependencies
+
+1. Check `node_modules/` in the current package
+2. Walk up to parent directories
+3. Resolve from the root `node_modules/`
+
+### Hoisting Behavior
+
+Bun hoists shared dependencies to the root `node_modules/`:
+
+```
+template/
+├── node_modules/
+│   ├── react/              # Hoisted
+│   ├── typescript/         # Hoisted
+│   └── @packages/
+│       ├── core -> ../../packages/core  # Symlink
+│       └── ui -> ../../packages/ui      # Symlink
+```
+
+Local packages are symlinked, not copied.
+
+## Adding Dependencies
+
+### To a Specific Package
+
+```bash
+# Add to packages/ui
+cd packages/ui
+bun add clsx
+
+# Add dev dependency
+bun add -d @types/node
+```
+
+### To the Root
+
+```bash
+# Add to root workspace
+bun add -d turbo
+```
+
+### Adding Catalog Entries
+
+1. Add the version to root `package.json` catalog
+2. Reference with `catalog:` in packages
+
+```json title="package.json"
+{
+  "catalog": {
+    "lodash": "4.17.21"
+  }
+}
+```
+
+```json title="apps/web/package.json"
+{
+  "dependencies": {
+    "lodash": "catalog:"
+  }
+}
+```
+
+## Phantom Dependencies
+
+A phantom dependency is using a package that's not in your `package.json` but happens to be installed because another package depends on it.
+
+### The Problem
+
+```typescript
+// This might work locally but fail in production
+import something from "transitive-dep";
+```
+
+### Bun's Stricter Resolution
+
+Bun enforces stricter module resolution than npm/yarn, catching phantom dependencies during development.
+
+### Prevention
+
+1. Always add explicit dependencies
+2. Use Bun's lockfile validation
+3. Run `bun install` in CI
+
+See [Phantom Dependencies](/docs/tooling/bun#phantom-dependencies) for a detailed case study.
+
+## Updating Dependencies
+
+### Single Dependency
+
+```bash
+bun update react
+```
+
+### All Dependencies
+
+```bash
+bun update
+```
+
+### Checking for Updates
+
+```bash
+bun outdated
+```
+
+## Best Practices
+
+### 1. Use Catalogs for Shared Deps
+
+Any dependency used by multiple packages should be in the catalog.
+
+### 2. Keep Lock File Updated
+
+Commit `bun.lock` to ensure reproducible installs:
+
+```bash
+git add bun.lock
+git commit -m "chore: update dependencies"
+```
+
+### 3. Audit Regularly
+
+Check for security vulnerabilities:
+
+```bash
+bun audit
+```
+
+### 4. Minimize Dependencies
+
+Every dependency is a maintenance burden. Ask:
+
+- Can we implement this ourselves?
+- Is there a smaller alternative?
+- Do we use enough of this package to justify it?

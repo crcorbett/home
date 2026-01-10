@@ -1,0 +1,234 @@
+---
+title: Bun
+description: Bun package manager, runtime, and workspace features
+---
+
+# Bun
+
+Bun is an all-in-one JavaScript runtime and package manager. This monorepo uses Bun 1.3.5 for package management and script execution.
+
+## Why Bun?
+
+- **Speed** - 10-100x faster than npm/yarn for installation
+- **Native TypeScript** - No transpilation needed for scripts
+- **Workspaces** - First-class monorepo support
+- **Compatibility** - Drop-in replacement for npm
+
+## Installation
+
+```bash
+# Install Bun
+curl -fsSL https://bun.sh/install | bash
+
+# Verify installation
+bun --version  # Should be 1.3.5+
+```
+
+## Workspace Configuration
+
+The root `package.json` defines the workspace:
+
+```json title="package.json"
+{
+  "workspaces": ["apps/*", "packages/*"],
+  "packageManager": "bun@1.3.5"
+}
+```
+
+This tells Bun to treat all directories in `apps/` and `packages/` as workspace packages.
+
+## Common Commands
+
+### Package Management
+
+```bash
+# Install all dependencies
+bun install
+
+# Add to specific package
+cd packages/ui && bun add clsx
+
+# Add dev dependency
+bun add -d typescript
+
+# Remove package
+bun remove lodash
+
+# Update dependencies
+bun update
+```
+
+### Running Scripts
+
+```bash
+# Run from root
+bun run dev        # Runs turbo dev
+bun run build      # Runs turbo build
+bun run check-types
+
+# Run in specific package
+cd apps/web && bun run dev
+```
+
+### Executing Binaries
+
+```bash
+# Run package binary
+bunx tsc --version
+bunx depcheck
+
+# Run TypeScript directly
+bun run script.ts
+```
+
+## Dependency Catalogs
+
+Shared dependency versions are defined in the root catalog:
+
+```json title="package.json"
+{
+  "catalog": {
+    "react": "19.2.3",
+    "typescript": "5.9.3",
+    "vite": "7.1.7"
+  }
+}
+```
+
+Reference them in packages:
+
+```json title="apps/web/package.json"
+{
+  "dependencies": {
+    "react": "catalog:",
+    "vite": "catalog:"
+  }
+}
+```
+
+## Workspace References
+
+Local packages use the `workspace:` protocol:
+
+```json
+{
+  "dependencies": {
+    "@packages/core": "workspace:*",
+    "@packages/ui": "workspace:*"
+  }
+}
+```
+
+This creates symlinks during installation, enabling live development.
+
+## Lock File
+
+Bun uses `bun.lock` (binary format) for deterministic installs:
+
+```bash
+# Always commit the lock file
+git add bun.lock
+```
+
+The lock file ensures everyone gets identical dependencies.
+
+## Phantom Dependencies
+
+A phantom dependency is using a package that's not in your `package.json` but happens to be installed transitively.
+
+### The Problem
+
+```typescript
+// This might work locally but fail elsewhere
+import something from "transitive-dep";
+```
+
+### How We Discovered This
+
+During our migration from pnpm to Bun, we found `packages/ui` was importing `react` types without declaring `@types/react`:
+
+```
+packages/ui/src/button.tsx:1:23 - error TS7016:
+Could not find a declaration file for module 'react'.
+```
+
+It worked under pnpm because `@types/react` was hoisted from another package. Bun's different hoisting exposed the bug.
+
+### Prevention
+
+1. **Explicit dependencies** - Declare everything you import
+2. **Run depcheck** - `bunx depcheck packages/ui`
+3. **Per-package type checking** - Turborepo runs `tsc` in each package
+
+### The Fix
+
+```diff title="packages/ui/package.json"
+{
+  "devDependencies": {
++   "@types/react": "catalog:",
++   "@types/react-dom": "catalog:"
+  }
+}
+```
+
+## Bun vs Node.js
+
+For this monorepo, Bun is used for:
+
+- Package installation (`bun install`)
+- Script execution (`bun run dev`)
+- Development tooling
+
+Vite and Nitro handle the actual application bundling and runtime.
+
+## Performance Tips
+
+### Parallel Installation
+
+Bun installs packages in parallel by default. No configuration needed.
+
+### Cache Location
+
+Bun caches packages in `~/.bun/install/cache/`. Clear if you have issues:
+
+```bash
+rm -rf ~/.bun/install/cache
+bun install
+```
+
+### Scripts
+
+For complex scripts, write them in TypeScript:
+
+```typescript title="scripts/setup.ts"
+import { $ } from "bun";
+
+await $`bun install`;
+await $`bun run build`;
+```
+
+Run with: `bun run scripts/setup.ts`
+
+## Troubleshooting
+
+### Installation Hangs
+
+```bash
+# Clear cache and retry
+rm -rf node_modules bun.lock ~/.bun/install/cache
+bun install
+```
+
+### Version Mismatch
+
+Ensure everyone uses the same Bun version:
+
+```json title="package.json"
+{
+  "packageManager": "bun@1.3.5"
+}
+```
+
+### Module Not Found
+
+Check that the package is in `package.json` (not a phantom dependency).

@@ -1,0 +1,120 @@
+---
+title: UI Components
+description: Shared React component library with Tailwind CSS
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+# UI Components
+
+The `@packages/ui` package provides a shared React component library built with Tailwind CSS and Base UI.
+
+## Overview
+
+<Cards>
+  <Card title="Component Library" href="/docs/ui-components/component-library">
+    Available components and usage patterns
+  </Card>
+</Cards>
+
+## Tech Stack
+
+| Technology     | Purpose             |
+| -------------- | ------------------- |
+| React 19       | UI framework        |
+| Tailwind CSS 4 | Styling             |
+| Base UI        | Headless components |
+| CVA            | Variant management  |
+| Tabler Icons   | Icon library        |
+
+## Quick Start
+
+Import components in your app:
+
+```typescript
+import { Button } from "@packages/ui/button";
+import { Card } from "@packages/ui/card";
+import { Input } from "@packages/ui/input";
+
+function MyComponent() {
+  return (
+    <Card>
+      <Input placeholder="Enter text" />
+      <Button>Submit</Button>
+    </Card>
+  );
+}
+```
+
+## Available Components
+
+### Form Components
+
+- **Button** - Primary action button with variants
+- **Input** - Text input field
+- **Textarea** - Multi-line text input
+- **Select** - Dropdown selection
+- **Combobox** - Searchable dropdown
+- **Field** - Form field wrapper
+- **Label** - Form label
+- **InputGroup** - Input with addons
+
+### Layout Components
+
+- **Card** - Content container
+- **Separator** - Visual divider
+
+### Interactive Components
+
+- **DropdownMenu** - Context menus
+- **AlertDialog** - Confirmation dialogs
+- **Badge** - Status indicators
+
+## Styling Approach
+
+Components use Tailwind CSS with CVA (Class Variance Authority) for variants:
+
+```typescript
+import { cva } from "class-variance-authority";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        destructive: "bg-destructive text-destructive-foreground",
+        outline: "border border-input bg-background",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+```
+
+## Importing Styles
+
+Include the base styles in your app:
+
+```typescript title="apps/web/src/app.css"
+@import "@packages/ui/styles/globals.css";
+```
+
+## Adding Components
+
+Use shadcn to add new components:
+
+```bash
+cd packages/ui
+bunx shadcn@latest add dialog
+```
+
+This scaffolds a new component following the established patterns.

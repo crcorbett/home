@@ -1,13 +1,82 @@
 ---
-title: Documentation
-description: Technical documentation for the monorepo
+title: Monorepo Template
+description: A modern, production-ready monorepo template with Bun, Turborepo, and TanStack Start
 ---
 
-Welcome to the documentation.
+import { Cards, Card } from "fumadocs-ui/components/card";
 
-## Getting Started
+# Monorepo Template
 
-This documentation covers the technical aspects of our monorepo setup, including:
+A production-ready monorepo template featuring modern tooling, AI-first development workflows, and excellent developer experience.
 
-- [TypeScript Configuration](/docs/typescript) - Our "live types" TypeScript monorepo setup
-- [Phantom Dependencies](/docs/phantom-dependencies) - How Bun caught a latent dependency bug
+## Features
+
+<Cards>
+  <Card title="Bun Runtime" href="/docs/tooling/bun">
+    Fast JavaScript runtime and package manager with native workspace support
+  </Card>
+  <Card title="Turborepo" href="/docs/tooling/turborepo">
+    High-performance build system with intelligent caching and task orchestration
+  </Card>
+  <Card title="TanStack Start" href="/docs/architecture/apps">
+    Full-stack React framework with file-based routing and SSR
+  </Card>
+  <Card title="Live Types" href="/docs/typescript/live-types">
+    Instant TypeScript feedback without build steps between packages
+  </Card>
+  <Card title="AI Integrations" href="/docs/ai-integrations">
+    MCP servers, Claude Code hooks, and Cursor IDE integration
+  </Card>
+  <Card title="Automated CI/CD" href="/docs/ci-cd">
+    GitHub Actions, Changesets versioning, and Vercel deployment
+  </Card>
+</Cards>
+
+## Quick Start
+
+```bash
+# Clone the template
+git clone https://github.com/your-org/template.git my-project
+cd my-project
+
+# Install dependencies
+bun install
+
+# Start development
+bun run dev
+```
+
+## What's Included
+
+### Applications
+
+- **Web App** - Consumer-facing application with TanStack Start
+- **Admin App** - Internal dashboard with the same architecture
+- **Docs App** - This documentation site built with Fumadocs
+
+### Shared Packages
+
+- **@packages/core** - Business logic and utilities
+- **@packages/ui** - React component library with Tailwind CSS
+- **@packages/api** - API client utilities (placeholder)
+
+### Developer Experience
+
+- **TypeScript** with strict mode and live types
+- **Ultracite** for fast Rust-based linting and formatting
+- **Fumadocs** for beautiful documentation
+- **Changesets** for version management
+
+## Next Steps
+
+<Cards>
+  <Card title="Installation" href="/docs/getting-started/installation">
+    Complete setup instructions for your development environment
+  </Card>
+  <Card title="Project Structure" href="/docs/getting-started/project-structure">
+    Understand the monorepo layout and organization
+  </Card>
+  <Card title="First Steps" href="/docs/getting-started/first-steps">
+    Run the development server and make your first changes
+  </Card>
+</Cards>

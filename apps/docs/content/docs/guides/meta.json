@@ -1,0 +1,11 @@
+{
+  "title": "Guides",
+  "description": "Step-by-step guides for common tasks",
+  "pages": [
+    "index",
+    "adding-package",
+    "adding-app",
+    "adding-component",
+    "deployment-guide"
+  ]
+}

@@ -1,0 +1,196 @@
+---
+title: Adding a Component
+description: Create a new UI component in @packages/ui
+---
+
+# Adding a Component
+
+This guide walks through adding a new component to `@packages/ui`.
+
+## Using shadcn
+
+The fastest way to add components:
+
+```bash
+cd packages/ui
+bunx shadcn@latest add dialog
+```
+
+This scaffolds a component following established patterns.
+
+## Manual Creation
+
+### 1. Create Component File
+
+```typescript title="packages/ui/src/tooltip.tsx"
+import * as React from "react";
+import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
+import { cn } from "./utils";
+
+export interface TooltipProps {
+  content: React.ReactNode;
+  children: React.ReactNode;
+  side?: "top" | "bottom" | "left" | "right";
+  className?: string;
+}
+
+export function Tooltip({
+  content,
+  children,
+  side = "top",
+  className,
+}: TooltipProps) {
+  return (
+    <BaseTooltip.Provider>
+      <BaseTooltip.Root>
+        <BaseTooltip.Trigger>{children}</BaseTooltip.Trigger>
+        <BaseTooltip.Portal>
+          <BaseTooltip.Positioner side={side}>
+            <BaseTooltip.Popup
+              className={cn(
+                "rounded-md bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md",
+                className
+              )}
+            >
+              {content}
+            </BaseTooltip.Popup>
+          </BaseTooltip.Positioner>
+        </BaseTooltip.Portal>
+      </BaseTooltip.Root>
+    </BaseTooltip.Provider>
+  );
+}
+```
+
+### 2. Add Variants with CVA
+
+For components with variants:
+
+```typescript title="packages/ui/src/badge.tsx"
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "./utils";
+
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        secondary: "bg-secondary text-secondary-foreground",
+        success: "bg-green-100 text-green-800",
+        warning: "bg-yellow-100 text-yellow-800",
+        destructive: "bg-destructive text-destructive-foreground",
+        outline: "border border-input bg-background",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
+
+export function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  );
+}
+```
+
+### 3. Export from Index (Optional)
+
+If you want a barrel export:
+
+```typescript title="packages/ui/src/index.ts"
+export { Button } from "./button";
+export { Badge } from "./badge";
+export { Tooltip } from "./tooltip";
+// ... other exports
+```
+
+## Usage
+
+Import directly:
+
+```typescript
+import { Tooltip } from "@packages/ui/tooltip";
+
+<Tooltip content="More info">
+  <button>Hover me</button>
+</Tooltip>
+```
+
+Or from index:
+
+```typescript
+import { Tooltip, Badge } from "@packages/ui";
+```
+
+## Styling Guidelines
+
+### Use Tailwind Classes
+
+```typescript
+// Good
+className="rounded-md bg-primary px-4 py-2"
+
+// Avoid inline styles
+style={{ borderRadius: 6, padding: 8 }}
+```
+
+### Use CSS Variables
+
+Reference theme variables:
+
+```typescript
+className="bg-primary text-primary-foreground"
+className="border-border bg-background"
+```
+
+### Support className Prop
+
+Always merge with user classes:
+
+```typescript
+import { cn } from "./utils";
+
+function MyComponent({ className, ...props }) {
+  return (
+    <div className={cn("default-classes", className)} {...props} />
+  );
+}
+```
+
+## Testing Components
+
+### Visual Testing
+
+Run the docs app and create a preview page:
+
+```typescript title="apps/docs/content/docs/ui-preview.mdx"
+import { Tooltip } from "@packages/ui/tooltip";
+
+# Tooltip Preview
+
+<Tooltip content="Hello!">
+  <button>Hover me</button>
+</Tooltip>
+```
+
+### Type Checking
+
+```bash
+cd packages/ui
+bun run check-types
+```
+
+## Best Practices
+
+1. **Use Base UI** - For complex interactions (dialogs, menus, tooltips)
+2. **Keep it simple** - Components should do one thing well
+3. **Document props** - Add JSDoc comments for IDE support
+4. **Support accessibility** - Use semantic HTML and ARIA attributes
+5. **Forward refs** - Use `React.forwardRef` for DOM components

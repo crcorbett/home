@@ -1,0 +1,290 @@
+---
+title: Component Library
+description: Available components and usage patterns
+---
+
+# Component Library
+
+This page documents all available components in `@packages/ui`.
+
+## Button
+
+Primary action button with multiple variants.
+
+```typescript
+import { Button } from "@packages/ui/button";
+
+// Default
+<Button>Click me</Button>
+
+// Variants
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Cancel</Button>
+<Button variant="ghost">Hover me</Button>
+
+// Sizes
+<Button size="sm">Small</Button>
+<Button size="lg">Large</Button>
+
+// With icon
+<Button>
+  <IconPlus /> Add Item
+</Button>
+
+// Loading state
+<Button disabled>
+  <IconLoader className="animate-spin" /> Loading...
+</Button>
+```
+
+### Props
+
+| Prop      | Type                                                 | Default     | Description             |
+| --------- | ---------------------------------------------------- | ----------- | ----------------------- |
+| `variant` | `"default" \| "destructive" \| "outline" \| "ghost"` | `"default"` | Visual style            |
+| `size`    | `"default" \| "sm" \| "lg"`                          | `"default"` | Button size             |
+| `asChild` | `boolean`                                            | `false`     | Render as child element |
+
+## Input
+
+Text input field with optional addons.
+
+```typescript
+import { Input } from "@packages/ui/input";
+
+// Basic
+<Input placeholder="Enter text" />
+
+// With type
+<Input type="email" placeholder="Email" />
+<Input type="password" placeholder="Password" />
+
+// Disabled
+<Input disabled placeholder="Disabled" />
+```
+
+### Props
+
+| Prop          | Type      | Default  | Description      |
+| ------------- | --------- | -------- | ---------------- |
+| `type`        | `string`  | `"text"` | Input type       |
+| `placeholder` | `string`  | -        | Placeholder text |
+| `disabled`    | `boolean` | `false`  | Disable input    |
+
+## Textarea
+
+Multi-line text input.
+
+```typescript
+import { Textarea } from "@packages/ui/textarea";
+
+<Textarea placeholder="Enter description" rows={4} />
+```
+
+## Card
+
+Content container with optional header and footer.
+
+```typescript
+import { Card } from "@packages/ui/card";
+
+<Card>
+  <h3>Card Title</h3>
+  <p>Card content goes here.</p>
+</Card>
+```
+
+## Select
+
+Dropdown selection component.
+
+```typescript
+import { Select } from "@packages/ui/select";
+
+<Select>
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+  <option value="3">Option 3</option>
+</Select>
+```
+
+## Combobox
+
+Searchable dropdown with filtering.
+
+```typescript
+import { Combobox } from "@packages/ui/combobox";
+
+const options = [
+  { value: "react", label: "React" },
+  { value: "vue", label: "Vue" },
+  { value: "angular", label: "Angular" },
+];
+
+<Combobox options={options} placeholder="Select framework" />
+```
+
+## Field
+
+Form field wrapper with label and error state.
+
+```typescript
+import { Field } from "@packages/ui/field";
+import { Input } from "@packages/ui/input";
+
+<Field label="Email" error="Invalid email address">
+  <Input type="email" />
+</Field>
+```
+
+## Label
+
+Form label component.
+
+```typescript
+import { Label } from "@packages/ui/label";
+
+<Label htmlFor="name">Name</Label>
+```
+
+## InputGroup
+
+Input with prefix or suffix.
+
+```typescript
+import { InputGroup } from "@packages/ui/input-group";
+
+<InputGroup prefix="$">
+  <Input type="number" placeholder="0.00" />
+</InputGroup>
+
+<InputGroup suffix=".com">
+  <Input placeholder="domain" />
+</InputGroup>
+```
+
+## DropdownMenu
+
+Context menu component using Base UI.
+
+```typescript
+import { DropdownMenu } from "@packages/ui/dropdown-menu";
+
+<DropdownMenu>
+  <DropdownMenu.Trigger>
+    <Button>Options</Button>
+  </DropdownMenu.Trigger>
+  <DropdownMenu.Content>
+    <DropdownMenu.Item>Edit</DropdownMenu.Item>
+    <DropdownMenu.Item>Duplicate</DropdownMenu.Item>
+    <DropdownMenu.Separator />
+    <DropdownMenu.Item variant="destructive">Delete</DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu>
+```
+
+## AlertDialog
+
+Confirmation dialog for destructive actions.
+
+```typescript
+import { AlertDialog } from "@packages/ui/alert-dialog";
+
+<AlertDialog>
+  <AlertDialog.Trigger>
+    <Button variant="destructive">Delete</Button>
+  </AlertDialog.Trigger>
+  <AlertDialog.Content>
+    <AlertDialog.Title>Are you sure?</AlertDialog.Title>
+    <AlertDialog.Description>
+      This action cannot be undone.
+    </AlertDialog.Description>
+    <AlertDialog.Actions>
+      <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+      <AlertDialog.Action>Delete</AlertDialog.Action>
+    </AlertDialog.Actions>
+  </AlertDialog.Content>
+</AlertDialog>
+```
+
+## Badge
+
+Status indicator.
+
+```typescript
+import { Badge } from "@packages/ui/badge";
+
+<Badge>Default</Badge>
+<Badge variant="success">Active</Badge>
+<Badge variant="warning">Pending</Badge>
+<Badge variant="destructive">Error</Badge>
+```
+
+## Separator
+
+Visual divider.
+
+```typescript
+import { Separator } from "@packages/ui/separator";
+
+<div>
+  <p>Above</p>
+  <Separator />
+  <p>Below</p>
+</div>
+
+// Vertical
+<div className="flex">
+  <span>Left</span>
+  <Separator orientation="vertical" />
+  <span>Right</span>
+</div>
+```
+
+## Icons
+
+Using Tabler Icons:
+
+```typescript
+import { IconPlus, IconTrash, IconEdit } from "@tabler/icons-react";
+
+<Button>
+  <IconPlus size={16} />
+  Add
+</Button>
+```
+
+Browse icons at [tabler-icons.io](https://tabler-icons.io).
+
+## Customization
+
+### Extending Components
+
+Wrap components with custom styles:
+
+```typescript
+import { Button } from "@packages/ui/button";
+import { cn } from "@packages/ui/utils";
+
+function PrimaryButton({ className, ...props }) {
+  return (
+    <Button
+      className={cn("bg-brand-500 hover:bg-brand-600", className)}
+      {...props}
+    />
+  );
+}
+```
+
+### Theme Variables
+
+Customize via CSS variables:
+
+```css
+:root {
+  --primary: 220 90% 56%;
+  --primary-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+}
+```

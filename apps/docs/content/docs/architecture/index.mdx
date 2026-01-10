@@ -1,0 +1,69 @@
+---
+title: Architecture
+description: Understanding the monorepo architecture and design decisions
+---
+
+# Architecture
+
+This monorepo is designed for scalability, developer experience, and maintainability. This section explains the architectural decisions and how the pieces fit together.
+
+## High-Level Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Applications                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │    Web      │  │   Admin     │  │    Docs     │          │
+│  │  (port 3000)│  │ (port 3001) │  │ (port 3001) │          │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘          │
+│         │                │                │                  │
+│         └────────────────┼────────────────┘                  │
+│                          │                                   │
+│  ┌───────────────────────┴───────────────────────┐          │
+│  │              Shared Packages                   │          │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐        │          │
+│  │  │  core   │  │   ui    │  │   api   │        │          │
+│  │  └─────────┘  └─────────┘  └─────────┘        │          │
+│  └───────────────────────────────────────────────┘          │
+│                                                              │
+├─────────────────────────────────────────────────────────────┤
+│                    Build Infrastructure                      │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │
+│  │   Bun   │  │  Turbo  │  │  Vite   │  │   TS    │        │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Core Principles
+
+### 1. Shared Code via Packages
+
+Common functionality lives in `packages/` and is shared across apps. This eliminates code duplication and ensures consistency.
+
+### 2. Live Types Development
+
+TypeScript types are resolved directly from source files during development, eliminating the need to rebuild packages when making changes.
+
+### 3. Parallel Task Execution
+
+Turborepo orchestrates builds and development tasks, running independent operations in parallel while respecting dependencies.
+
+### 4. AI-First Development
+
+Built-in support for AI coding assistants with MCP servers, hooks, and context submodules.
+
+## Key Components
+
+| Component  | Purpose                  | Documentation                           |
+| ---------- | ------------------------ | --------------------------------------- |
+| Apps       | User-facing applications | [Apps](/docs/architecture/apps)         |
+| Packages   | Shared libraries         | [Packages](/docs/architecture/packages) |
+| Turborepo  | Build orchestration      | [Turborepo](/docs/tooling/turborepo)    |
+| TypeScript | Type safety              | [TypeScript](/docs/typescript)          |
+
+## Explore Further
+
+- **[Monorepo Design](/docs/architecture/monorepo-design)** - Philosophy and workspace structure
+- **[Apps](/docs/architecture/apps)** - Application architecture details
+- **[Packages](/docs/architecture/packages)** - Shared package patterns
+- **[Dependencies](/docs/architecture/dependencies)** - Dependency management strategies
